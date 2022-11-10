@@ -35,7 +35,7 @@ public class RetryConformanceTestFixture : CloudProjectFixtureBase, ICollectionF
 
     //internal static string TestBenchUrl { get; } = GetEnvironmentVariableOrDefault("TEST_BENCH_URL", "http://localhost:9000/");
 
-    // TODO: Consider using the normal TEST_PROJECT environment variable (the default) instead.
+    // PROJECT_ID to be set to "test" for storage test bench
     public RetryConformanceTestFixture() : base("PROJECT_ID")
     {
         var clientBuilder = new StorageClientBuilder
