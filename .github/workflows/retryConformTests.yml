@@ -12,7 +12,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: /home/runner/work/google-cloud-dotnet/
+        working-directory: /home/runner/work/google-cloud-dotnet/google-cloud-dotnet/
 
     services:
       emulator:
