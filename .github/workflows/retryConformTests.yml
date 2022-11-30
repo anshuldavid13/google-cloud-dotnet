@@ -1,29 +1,29 @@
 name: Run Storage retry conformance tests against service emulator
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: ubuntu-20.04
-    defaults:
-      run:
-        shell: bash
+  test:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
 
-    services:
-      emulator:
-        image: gcr.io/cloud-devrel-public-resources/storage-testbench:latest
-        ports:
-          - 9000:9000
+    services:
+      emulator:
+        image: gcr.io/cloud-devrel-public-resources/storage-testbench:latest
+        ports:
+          - 9000:9000
 
-    steps:
-      # Install .NET Core 3.1 for testing
-      - name: Setup .NET Core 3.1
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 3.1.x
+    steps:
+      # Install .NET Core 3.1 for testing
+      - name: Setup .NET Core 3.1
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 3.1.x
 
-      - run: pwd
+      - run: pwd
