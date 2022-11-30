@@ -1,0 +1,40 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'google-cloud-dotnet/apis/Google.Cloud.Storage.V1/**'
+  pull_request:
+    paths:
+      - 'google-cloud-dotnet/apis/Google.Cloud.Storage.V1/**'
+name: Run Storage retry conformance tests against service emulator
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: google-cloud-dotnet/apis/Google.Cloud.Storage.V1
+
+    services:
+      emulator:
+        image: gcr.io/cloud-devrel-public-resources/storage-testbench:latest
+        ports:
+          - 9000:9000
+
+# Install .NET Core 3.1 for testing
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 3.1.x
+
+# Install .NET 6 for building
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+        
+    steps:
+      - run: dotnet test conformance-tests
+        env:
+          TEST_BENCH_URL: http://localhost:9000/
