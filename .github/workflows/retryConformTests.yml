@@ -12,7 +12,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: /home/runner/work/google-cloud-dotnet/google-cloud-dotnet/
+        working-directory: /home/runner/work/google-cloud-dotnet/google-cloud-dotnet/apis/Google.Cloud.Storage.V1/
 
     services:
       emulator:
@@ -31,4 +31,6 @@ jobs:
         with:
           dotnet-version: 3.1.x
 
-      - run: ls
+      - run: dotnet test conformance-tests
+        env:
+          TEST_BENCH_URL: http://localhost:9000/
