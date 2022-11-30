@@ -1,12 +1,5 @@
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - '**[Ss]torage**'
-  pull_request:
-     paths:
-      - '**[Ss]torage**'
+on: [pull_request]
+
 name: Run Storage retry conformance tests against service emulator
 jobs:
   test:
