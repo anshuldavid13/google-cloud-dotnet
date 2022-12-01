@@ -40,4 +40,4 @@ jobs:
       - run: dotnet test Google.Cloud.Storage.V1.RetryConformanceTests.csproj
         env:
           TEST_BENCH_URL: http://localhost:9000/
-          GOOGLE_APPLICATION_CREDENTIALS: C:/Users/anshuldavid/Desktop/DotnetFiles/CredentialsJson/DotnetSamples/cloud-dotnet-samples-2c6bfac791a0.json
+          GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/google-cloud-dotnet/conformance-tests/storage/v1/test_service_account.not-a-test.json
