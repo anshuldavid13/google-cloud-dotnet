@@ -37,6 +37,6 @@ jobs:
         with:
           dotnet-version: 6.0.100
 
-      - run: Google.Cloud.Storage.V1.RetryConformanceTests.csproj
+      - run: dotnet test Google.Cloud.Storage.V1.RetryConformanceTests.csproj
         env:
           TEST_BENCH_URL: http://localhost:9000/
