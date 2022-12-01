@@ -12,7 +12,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: /home/runner/work/google-cloud-dotnet/
+        working-directory: /home/runner/work/google-cloud-dotnet/google-cloud-dotnet/apis/Google.Cloud.Storage.V1/Google.Cloud.Storage.V1.RetryConformanceTests/
 
     services:
       emulator:
@@ -37,7 +37,7 @@ jobs:
         with:
           dotnet-version: 6.0.100
 
-      - run: find -name test_service_account.not-a-test.json
+      - run: dotnet test Google.Cloud.Storage.V1.RetryConformanceTests.csproj
         env:
           TEST_BENCH_URL: http://localhost:9000/
-          GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/google-cloud-dotnet/conformance-tests/storage/v1/test_service_account.not-a-test.json
+          GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/google-cloud-dotnet/google-cloud-dotnet/conformance-tests/storage/v1/test_service_account.not-a-test.json
