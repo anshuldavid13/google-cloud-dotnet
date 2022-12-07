@@ -57,6 +57,9 @@ public class RetryConformanceTest
 
         foreach (InstructionList instructionList in test.Cases)
         {
+            if (instructionList.Instructions.Contains("return-reset-connection"))
+                continue;     
+            
             foreach (Method method in test.Methods)
             {
                 if (ShouldRunMethod(method.Name))
