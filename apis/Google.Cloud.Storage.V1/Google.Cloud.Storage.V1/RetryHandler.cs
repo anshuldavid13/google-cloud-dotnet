@@ -64,6 +64,7 @@ namespace Google.Cloud.Storage.V1
 
         public async Task<bool> HandleResponseAsync(HandleUnsuccessfulResponseArgs args)
         {
+            Console.WriteLine(args.Response);
             var retry = args.SupportsRetry && await IsRetriableResponse(args.Response).ConfigureAwait(false);
             if (!retry)
             {
