@@ -58,9 +58,12 @@ public class RetryConformanceTest
     [MemberData(nameof(RetryTestData))]
     public async Task RetryTest(RetryTest test)
     {
+
         using var client = new HttpClient();
         var content = await client.GetStringAsync("http://localhost:9000");
-        Assert.Equal("test",content);
+        _output.WriteLine(content);
+        _output.WriteLine("************************************************");
+       // Assert.Equal("test",content);
 
         Skip.IfNot(ShouldRunTest(test));
 
