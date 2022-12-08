@@ -61,8 +61,8 @@ public class RetryConformanceTest
 
         using var client = new HttpClient();
         var content = await client.GetStringAsync("http://localhost:9000");
-        _output.WriteLine(content);
-        _output.WriteLine("************************************************");
+        Console.WriteLine(content);
+        Console.WriteLine("************************************************");
        // Assert.Equal("test",content);
 
         Skip.IfNot(ShouldRunTest(test));
@@ -76,9 +76,9 @@ public class RetryConformanceTest
             {
                 if (ShouldRunMethod(method.Name))
                 {
-                    Console.WriteLine(method.Name + "is executing");
+                    Console.WriteLine(method.Name + " is executing");
                     await RunTestCaseAsync(instructionList, method, test.ExpectSuccess, test.PreconditionProvided);
-                    _output.WriteLine(method.Name + "is now executing");
+                    Console.WriteLine(method.Name + " is passed");
                 }
             }
         }
