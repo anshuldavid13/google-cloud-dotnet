@@ -26,7 +26,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-
+using Xunit.Abstractions;
 using Object = Google.Apis.Storage.v1.Data.Object;
 
 namespace Google.Cloud.Storage.V1.RetryConformanceTests;
@@ -39,11 +39,16 @@ public class RetryConformanceTest
 
     private readonly RetryConformanceTestFixture _fixture;
     private readonly string retryIdPrefix = IdGenerator.FromGuid(prefix: "test-id-", suffix: "-", maxLength: 20);
+    private readonly ITestOutputHelper _output;
 
-    public RetryConformanceTest(RetryConformanceTestFixture fixture) =>
+    public RetryConformanceTest(RetryConformanceTestFixture fixture, ITestOutputHelper output)
+    {
         _fixture = fixture;
+        _output = output;
+    }
 
     private StorageClient Client => _fixture.Client;
+
 
     /// <summary>
     /// Runs a single <see cref="RetryTest"/>,
@@ -53,6 +58,10 @@ public class RetryConformanceTest
     [MemberData(nameof(RetryTestData))]
     public async Task RetryTest(RetryTest test)
     {
+        using var client = new HttpClient();
+        var content = await client.GetStringAsync("http://localhost:9000");
+        Assert.Equal("test",content);
+
         Skip.IfNot(ShouldRunTest(test));
 
         foreach (InstructionList instructionList in test.Cases)
@@ -64,7 +73,9 @@ public class RetryConformanceTest
             {
                 if (ShouldRunMethod(method.Name))
                 {
+                    Console.WriteLine(method.Name + "is executing");
                     await RunTestCaseAsync(instructionList, method, test.ExpectSuccess, test.PreconditionProvided);
+                    _output.WriteLine(method.Name + "is now executing");
                 }
             }
         }
