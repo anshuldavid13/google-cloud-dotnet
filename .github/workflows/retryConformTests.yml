@@ -39,4 +39,4 @@ jobs:
 
       - run: dotnet test Google.Cloud.Storage.V1.RetryConformanceTests.csproj
         env:
-          TEST_BENCH_URL: localhost:9000
+          TEST_BENCH_URL: http://localhost:9000/
