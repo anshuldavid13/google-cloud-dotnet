@@ -64,7 +64,7 @@ namespace Google.Cloud.Storage.V1
 
         public async Task<bool> HandleResponseAsync(HandleUnsuccessfulResponseArgs args)
         {
-            Console.WriteLine(args.Response);
+            Console.WriteLine("STATUS CODE: "+args.Response.StatusCode +" RESPONSE PHRASE: "+ args.Response.ReasonPhrase);
             var retry = args.SupportsRetry && await IsRetriableResponse(args.Response).ConfigureAwait(false);
             if (!retry)
             {
