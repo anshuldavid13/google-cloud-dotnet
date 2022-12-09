@@ -58,13 +58,7 @@ public class RetryConformanceTest
     [MemberData(nameof(RetryTestData))]
     public async Task RetryTest(RetryTest test)
     {
-
-        using var client = new HttpClient();
-        var content = await client.GetStringAsync("http://localhost:9000");
-        Console.WriteLine(content);
         Console.WriteLine("************************************************");
-       // Assert.Equal("test",content);
-
         Skip.IfNot(ShouldRunTest(test));
 
         if(test.Id == 1)
@@ -143,7 +137,7 @@ public class RetryConformanceTest
     private async Task<TestResponse> CreateRetryTestResourceAsync(InstructionList instructionList, Method method)
     {
         var stringContent = GetBodyContent(method.Name, instructionList);
-        Console.WriteLine("Creating the resource for method: " + method.Name + " for instructions: " + instructionList.Instructions.ToString());
+        Console.WriteLine("Creating the resource for method: " + method.Name + " for instructions: " + instructionList.Instructions.ToString()+" URI: "+ _fixture.HttpClient.BaseAddress.ToString());
         HttpResponseMessage response = await _fixture.HttpClient.PostAsync("retry_test", stringContent);
         response.EnsureSuccessStatusCode();
         var responseMessage = await response.Content.ReadAsStringAsync();
@@ -171,7 +165,7 @@ public class RetryConformanceTest
 
     // Note: not a local function as that cannot handle dynamic binding with generics.
     private static void ConsumeListOutput<TRequest, TResource>(PagedEnumerable<TRequest, TResource> pagedEnumerable) =>
-        pagedEnumerable.ReadPage(1000);
+        pagedEnumerable.ReadPage(10000);
 
     private object ExecuteRpc(string rpc, TestContext ctx, bool specifyPreconditions)
     {
