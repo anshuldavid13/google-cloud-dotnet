@@ -66,6 +66,7 @@ public class RetryConformanceTest
        // Assert.Equal("test",content);
 
         Skip.IfNot(ShouldRunTest(test));
+        Skip.IfNot(test.Id==1);
 
         foreach (InstructionList instructionList in test.Cases)
         {
