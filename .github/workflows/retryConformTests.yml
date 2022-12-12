@@ -42,4 +42,4 @@ jobs:
       - name: Output file
         run: |
              cat /tmp/stdout 
-             cat 2>/tmp/stderr
+             cat /tmp/stderr
