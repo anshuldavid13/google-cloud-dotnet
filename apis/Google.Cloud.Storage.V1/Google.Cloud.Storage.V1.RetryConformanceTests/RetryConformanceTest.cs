@@ -125,8 +125,12 @@ public class RetryConformanceTest
                 {
                     // The instructions specified that the given status code would be returned.
                     // We just need to check that we weren't expecting this specific call to succeed.
-                }
+                }                
             }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(method.Name + " threw EXCEPTION!! WHILE RUNNING TEST with MESSAGE: " + ex.Message + " INNER EXCEPTION: " + ex.InnerException + " STACK TRACE: " + ex.StackTrace);
         }
         finally
         {
@@ -138,7 +142,7 @@ public class RetryConformanceTest
             }
             catch (Exception ex) // To catch and ignore exceptions occured, if any, while doing clean up of test.
             {
-                Console.WriteLine(method.Name + " threw EXCEPTION!! with MESSAGE: " + ex.Message + " INNER EXCEPTION: " + ex.InnerException + " STACK TRACE: " + ex.StackTrace);
+                Console.WriteLine(method.Name + " threw EXCEPTION!!  WHILE DELETING RESOURCES with MESSAGE: " + ex.Message + " INNER EXCEPTION: " + ex.InnerException + " STACK TRACE: " + ex.StackTrace);
             }
         }
 
