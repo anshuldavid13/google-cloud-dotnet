@@ -71,7 +71,7 @@ public class RetryConformanceTest
             Console.WriteLine("#########################################################################");
             foreach (Method method in test.Methods)
             {
-                if (method.Name == "storage.hmacKey.create" || (test.Id == 6 && method.Name == "storage.buckets.delete"))
+                if (method.Name == "storage.hmacKey.create" || (test.Id == 6 && (method.Name == "storage.buckets.delete" || method.Name == "storage.buckets.get")))
                     continue;
 
                 if (ShouldRunMethod(method.Name))
