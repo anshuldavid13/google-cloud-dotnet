@@ -35,7 +35,6 @@ jobs:
         run: docker run -d --name storage-testbench -p 9000:9000 gcr.io/cloud-devrel-public-resources/storage-testbench:latest >/tmp/stdout 2>/tmp/stderr
 
       - run: dotnet test Google.Cloud.Storage.V1.RetryConformanceTests.csproj
-        continue-on-error: true
         env:
           TEST_BENCH_URL: http://localhost:9000/
       
