@@ -71,6 +71,9 @@ public class RetryConformanceTest
             Console.WriteLine("#########################################################################");
             foreach (Method method in test.Methods)
             {
+                if (method.Name == "storage.hmacKey.create")
+                    continue;
+
                 if (ShouldRunMethod(method.Name))
                 {
                     Console.WriteLine(method.Name + " is executing");
