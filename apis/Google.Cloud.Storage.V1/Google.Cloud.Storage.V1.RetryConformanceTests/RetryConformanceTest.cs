@@ -61,25 +61,24 @@ public class RetryConformanceTest
         Console.WriteLine("************************************************");
         Skip.IfNot(ShouldRunTest(test));
 
-        if (test.Id == 1)
-            foreach (InstructionList instructionList in test.Cases)
-            {
-                if (instructionList.Instructions.Contains("return-reset-connection"))
-                    continue;
+        foreach (InstructionList instructionList in test.Cases)
+        {
+            if (instructionList.Instructions.Contains("return-reset-connection"))
+                continue;
 
-                Console.WriteLine("#########################################################################");
-                Console.WriteLine("Test ID: " + test.Id + "  with instruction: " + instructionList.Instructions.ToString());
-                Console.WriteLine("#########################################################################");
-                foreach (Method method in test.Methods)
+            Console.WriteLine("#########################################################################");
+            Console.WriteLine("Test ID: " + test.Id + "  with instruction: " + instructionList.Instructions.ToString());
+            Console.WriteLine("#########################################################################");
+            foreach (Method method in test.Methods)
+            {
+                if (ShouldRunMethod(method.Name))
                 {
-                    if (ShouldRunMethod(method.Name))
-                    {
-                        Console.WriteLine(method.Name + " is executing");
-                        await RunTestCaseAsync(instructionList, method, test.ExpectSuccess, test.PreconditionProvided);
-                        Console.WriteLine(method.Name + " is passed");
-                    }
+                    Console.WriteLine(method.Name + " is executing");
+                    await RunTestCaseAsync(instructionList, method, test.ExpectSuccess, test.PreconditionProvided);
+                    Console.WriteLine(method.Name + " is passed");
                 }
             }
+        }
 
         // bucket_acl, default_object_acl, object_acl functions do not exist in our handwritten library.
         // object.compose does not exist in our handwritten library and hence does not have retry implemented
@@ -137,9 +136,9 @@ public class RetryConformanceTest
                 RemoveRetryIdHeader();
                 await DeleteRetryTest(response.Id);
             }
-            catch(Exception ex) // To catch and ignore exceptions occured, if any, while doing clean up of test.
+            catch (Exception ex) // To catch and ignore exceptions occured, if any, while doing clean up of test.
             {
-                Console.WriteLine(method.Name+" threw EXCEPTION!! with MESSAGE: "+ ex.Message +" INNER EXCEPTION: "+ex.InnerException + " STACK TRACE: "+ex.StackTrace);
+                Console.WriteLine(method.Name + " threw EXCEPTION!! with MESSAGE: " + ex.Message + " INNER EXCEPTION: " + ex.InnerException + " STACK TRACE: " + ex.StackTrace);
             }
         }
 
