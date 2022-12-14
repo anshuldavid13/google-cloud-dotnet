@@ -63,17 +63,14 @@ public class RetryConformanceTest
 
         foreach (InstructionList instructionList in test.Cases)
         {
-            if (instructionList.Instructions.Contains("return-reset-connection"))
-                continue;
+         //   if (instructionList.Instructions.Contains("return-reset-connection"))
+          //      continue;
 
             Console.WriteLine("#########################################################################");
             Console.WriteLine("Test ID: " + test.Id + "  with instruction: " + instructionList.Instructions.ToString());
             Console.WriteLine("#########################################################################");
             foreach (Method method in test.Methods)
             {
-                if (method.Name == "storage.hmacKey.create" || (test.Id == 6 && (method.Name == "storage.buckets.delete" || method.Name == "storage.buckets.get")))
-                    continue;
-
                 if (ShouldRunMethod(method.Name))
                 {
                     Console.WriteLine(method.Name + " is executing");
