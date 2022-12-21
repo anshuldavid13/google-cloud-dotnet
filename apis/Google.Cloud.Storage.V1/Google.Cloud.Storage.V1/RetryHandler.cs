@@ -37,30 +37,35 @@ namespace Google.Cloud.Storage.V1
         internal const string InvocationIdHeaderPart = "gccl-invocation-id";
         internal const string AttemptCountHeaderPart = "gccl-attempt-count";
 
-        private static readonly int[] s_retriableErrorCodes =
-        {
-                408, // Request timeout
-                429, // Too many requests
-                500, // Internal server error
-                502, // Bad gateway
-                503, // Service unavailable
-                504 // Gateway timeout
-        };
-        private static readonly RetryHandler s_instance = new RetryHandler();
+        private readonly double _backoffMultiplier;
+        private readonly TimeSpan _initialBackoff;
+        private readonly TimeSpan _maxBackoff;
+        private readonly RetryPredicate _retryPredicate;
 
-        private RetryHandler() { }
-
-        internal static void MarkAsRetriable<TResponse>(StorageBaseServiceRequest<TResponse> request)
+        internal RetryHandler(RetryOptions retryOptions)
         {
+            _retryPredicate = retryOptions.RetryPredicate;
+            _backoffMultiplier = retryOptions.RetryTimings.BackoffMultiplier;
+            _initialBackoff = retryOptions.RetryTimings.InitialBackoff;
+            _maxBackoff = retryOptions.RetryTimings.MaxBackoff;
+        }
+
+        // TODO: Provided null options for now, will remove it once the implementation across all APIs is complete
+        internal static void MarkAsRetriable<TResponse>(StorageBaseServiceRequest<TResponse> request, RetryOptions options = null)
+        {
+            //TODO : Remove this section once the implementation across all APIs is complete
+            options ??= RetryOptions.IdempotentRetryOptions;
+            RetryHandler retryHandler = new RetryHandler(options);
+
             // Note: we can't use ModifyRequest, as the x-goog-api-client header is added later by ConfigurableMessageHandler.
             // Additionally, that's only called once, and we may want to record the attempt number as well.
             request.AddExecuteInterceptor(InvocationIdInterceptor.Instance);
-            request.AddUnsuccessfulResponseHandler(s_instance);
+            request.AddUnsuccessfulResponseHandler(retryHandler);
         }
 
         // This function is designed to support asynchrony in case we need to examine the response content, but for now we only need the status code
-        internal static Task<bool> IsRetriableResponse(HttpResponseMessage response) => 
-            Task.FromResult(s_retriableErrorCodes.Contains(((int)response.StatusCode)));
+        internal Task<bool> IsRetriableResponse(HttpResponseMessage response) =>
+                 Task.FromResult(_retryPredicate.ShouldRetry((int) response.StatusCode));
 
         public async Task<bool> HandleResponseAsync(HandleUnsuccessfulResponseArgs args)
         {
@@ -69,14 +74,10 @@ namespace Google.Cloud.Storage.V1
             {
                 return false;
             }
-            // The first failure will have args.CurrentFailedTry set to 1,
-            // whereas we want the first delay to be 1 second. We use Math.Min on the power
-            // rather than on the result to obtain a max retry of 32 seconds without risking
-            // calling Math.Pow with a huge number.
-            int power = Math.Min(args.CurrentFailedTry - 1, 5);
-            double seconds = Math.Pow(2.0, power);
-            var delay = TimeSpan.FromSeconds(seconds);
-            await Task.Delay(delay, args.CancellationToken).ConfigureAwait(false);
+
+            TimeSpan delay = _initialBackoff + TimeSpan.FromSeconds((args.CurrentFailedTry - 1) * _backoffMultiplier);
+            await Task.Delay((delay > _maxBackoff) ? _maxBackoff : delay, args.CancellationToken).ConfigureAwait(false);
+
             return true;
         }
 

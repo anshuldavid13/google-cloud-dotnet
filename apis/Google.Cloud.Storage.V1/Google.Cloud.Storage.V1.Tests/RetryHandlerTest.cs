@@ -27,7 +27,7 @@ public class RetryHandlerTest
         {
             StatusCode = HttpStatusCode.BadGateway
         };
-        var actual = RetryHandler.IsRetriableResponse(httpResponse);
+        var actual = new RetryHandler(RetryOptions.IdempotentRetryOptions).IsRetriableResponse(httpResponse);
         Assert.True(actual.Result);
     }
 
@@ -38,7 +38,7 @@ public class RetryHandlerTest
         {
             StatusCode = HttpStatusCode.RequestUriTooLong
         };
-        var actual = RetryHandler.IsRetriableResponse(httpResponse);
+        var actual = new RetryHandler(RetryOptions.IdempotentRetryOptions).IsRetriableResponse(httpResponse);
         Assert.False(actual.Result);
     }
 
@@ -46,7 +46,7 @@ public class RetryHandlerTest
     public void NonRetriableResponse_NoErrorCode()
     {
         var httpResponse = new HttpResponseMessage();
-        var actual = RetryHandler.IsRetriableResponse(httpResponse);
+        var actual = new RetryHandler(RetryOptions.IdempotentRetryOptions).IsRetriableResponse(httpResponse);
         Assert.False(actual.Result);
     }
 }
