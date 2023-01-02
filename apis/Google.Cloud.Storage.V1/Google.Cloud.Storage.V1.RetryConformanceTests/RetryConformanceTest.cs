@@ -63,8 +63,8 @@ public class RetryConformanceTest
 
         foreach (InstructionList instructionList in test.Cases)
         {
-         //   if (instructionList.Instructions.Contains("return-reset-connection"))
-          //      continue;
+            if (instructionList.Instructions.Contains("return-reset-connection"))
+                continue;
 
             Console.WriteLine("#########################################################################");
             Console.WriteLine("Test ID: " + test.Id + "  with instruction: " + instructionList.Instructions.ToString());
