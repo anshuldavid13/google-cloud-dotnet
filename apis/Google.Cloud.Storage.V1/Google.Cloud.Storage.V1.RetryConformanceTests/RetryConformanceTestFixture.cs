@@ -31,7 +31,8 @@ public class RetryConformanceTestFixture : ICollectionFixture<RetryConformanceTe
     internal string SampleObjectContentPath => Path.Combine(StorageConformanceTestData.TestData.DataPath, "test_service_account.not-a-test.json");
     internal string ProjectId { get; } = "test";
     internal HttpClient HttpClient { get; }
-    internal static string TestBenchUrl { get; } = GetEnvironmentVariableOrDefault("TEST_BENCH_URL", "http://localhost:9000/");
+    //internal static string TestBenchUrl { get; } = GetEnvironmentVariableOrDefault("TEST_BENCH_URL", "http://localhost:9000/");
+    internal static string TestBenchUrl { get; } = GetEnvironmentVariableOrDefault("TEST_BENCH_URL", "https://storage-testbench-vkcain7hhq-el.a.run.app/");
 
     public RetryConformanceTestFixture()
     {
