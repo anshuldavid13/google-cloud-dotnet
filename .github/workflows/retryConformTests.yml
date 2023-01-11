@@ -37,15 +37,15 @@ jobs:
       with:
         dotnet-version: 6.0.x
       
-    - name: Docker run  
-      run: docker run -d https://storage-testbench-vkcain7hhq-el.a.run.app/ >/tmp/stdout 2>/tmp/stderr
+    #- name: Docker run  
+    #  run: docker run -d https://storage-testbench-vkcain7hhq-el.a.run.app/ >/tmp/stdout 2>/tmp/stderr
 
     - run: dotnet test Google.Cloud.Storage.V1.RetryConformanceTests.csproj
-      continue-on-error: true
-      #env:
-        #TEST_BENCH_URL: http://localhost:9000/
+    #  continue-on-error: true
+      env:
+        TEST_BENCH_URL: https://storage-testbench-vkcain7hhq-el.a.run.app/
       
-    - name: Output file
-      run: |
-           cat /tmp/stderr
-           cat /tmp/stdout 
+    #- name: Output file
+    #  run: |
+    #       cat /tmp/stderr
+    #       cat /tmp/stdout 
