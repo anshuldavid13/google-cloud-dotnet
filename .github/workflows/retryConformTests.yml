@@ -14,11 +14,11 @@ jobs:
         shell: bash
         working-directory: /home/runner/work/google-cloud-dotnet/google-cloud-dotnet/apis/Google.Cloud.Storage.V1/Google.Cloud.Storage.V1.RetryConformanceTests/
 
-    services:
-      emulator:
-        image: gcr.io/cloud-devrel-public-resources/storage-testbench:latest
-        ports:
-          - 9000:9000
+    #services:
+    #  emulator:
+    #    image: gcr.io/cloud-devrel-public-resources/storage-testbench:latest
+    #    ports:
+    #      - 9000:9000
 
     steps:
     - uses: actions/checkout@v3
@@ -41,8 +41,8 @@ jobs:
       run: docker run -d --name storage-testbench -p 9000:9000 gcr.io/cloud-devrel-public-resources/storage-testbench:latest 
       #>/tmp/stdout 2>/tmp/stderr
     
-    #- name: Wait for the storage emulator
-    #  run: sleep 30
+    - name: Wait for the storage emulator
+      run: sleep 30
 
     - run: dotnet test Google.Cloud.Storage.V1.RetryConformanceTests.csproj
     #   continue-on-error: true
