@@ -24,6 +24,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -251,7 +252,7 @@ public class RetryConformanceTest
         string CreateBucket(string bucketName)
         {
             Client.CreateBucket(_fixture.ProjectId, new Bucket { Name = bucketName });
-            _fixture.SleepAfterBucketCreate();
+            _fixture.SleepAfterBucketCreateDelete();
             return bucketName;
         }
 
