@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 
-using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1.Tests.Conformance;
 using System;
 using System.IO;
@@ -38,8 +37,7 @@ public class RetryConformanceTestFixture : ICollectionFixture<RetryConformanceTe
         var clientBuilder = new StorageClientBuilder
         {
             BaseUri = TestBenchUrl + "storage/v1/",
-            GZipEnabled = false,
-            GoogleCredential = GoogleCredential.FromAccessToken("not--a-token")
+            GZipEnabled = false
         };
         HttpClient = new HttpClient
         {
@@ -68,5 +66,5 @@ public class RetryConformanceTestFixture : ICollectionFixture<RetryConformanceTe
         return string.IsNullOrEmpty(value) ? defaultValue : value;
     }
 
-    public void SleepAfterBucketCreateDelete() => Thread.Sleep(2000);
+    public void SleepAfterBucketCreate() => Thread.Sleep(2000);
 }
