@@ -56,6 +56,8 @@ public class RetryConformanceTest
     [MemberData(nameof(RetryTestData))]
     public async Task RetryTest(RetryTestCase testCase)
     {
+        Console.WriteLine("**********************************************************************");
+
         var test = testCase.Test;
         var method = testCase.Method;
         var instructionList = testCase.InstructionList;
@@ -72,6 +74,10 @@ public class RetryConformanceTest
             RunRetryTest(response, context, method.Group, test.PreconditionProvided);
             var postTestResponse = await GetRetryTestAsync(response.Id);
             Assert.True(postTestResponse.Completed, "Expected retry test completed to be true, but was false.");
+            if (postTestResponse.Completed)
+            {
+                Console.WriteLine("####################    TEST COMPLETED SUCCESSFULLY   ##################");
+            }
         }
         else
         {
@@ -79,6 +85,10 @@ public class RetryConformanceTest
             {
                 RunRetryTest(response, context, method.Group, test.PreconditionProvided);
                 Assert.False(response.Completed);
+                if (!response.Completed)
+                {
+                    Console.WriteLine("####################    TEST COMPLETED SUCCESSFULLY   ##################");
+                }
             }
             catch (GoogleApiException ex) when (InstructionContainsErrorCode(ex.HttpStatusCode))
             {
@@ -86,7 +96,7 @@ public class RetryConformanceTest
                 // We just need to check that we weren't expecting this specific call to succeed.
             }
         }
-
+        Console.WriteLine("**********************************************************************");
         bool InstructionContainsErrorCode(HttpStatusCode statusCode) =>
             instructionList.Instructions.Contains($"return-{(int) statusCode}");
     }
@@ -99,7 +109,6 @@ public class RetryConformanceTest
         var stringContent = GetBodyContent(method.Name, instructionList);
         Console.WriteLine("Creating the resource for method: " + method.Name + " for instructions: " + instructionList.Instructions.ToString());
         HttpResponseMessage response = await _fixture.HttpClient.PostAsync("retry_test", stringContent);
-        Thread.Sleep(7000);
         response.EnsureSuccessStatusCode();
         var responseMessage = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<TestResponse>(responseMessage);
