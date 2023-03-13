@@ -4,8 +4,6 @@ on:
   push:
     branches: [ main ] 
   pull_request:
-    paths:
-      - '/home/runner/work/google-cloud-dotnet/google-cloud-dotnet/apis/Google.Cloud.Storage.V1/**'
 
 jobs:
   test:
