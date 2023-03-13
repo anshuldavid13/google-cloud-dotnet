@@ -24,7 +24,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -56,8 +55,6 @@ public class RetryConformanceTest
     [MemberData(nameof(RetryTestData))]
     public async Task RetryTest(RetryTestCase testCase)
     {
-        Console.WriteLine("**********************************************************************");
-
         var test = testCase.Test;
         var method = testCase.Method;
         var instructionList = testCase.InstructionList;
@@ -71,32 +68,31 @@ public class RetryConformanceTest
 
         if (test.ExpectSuccess)
         {
+            Console.WriteLine("**************** STARTED TEST " + method.Name + " ********************");
             RunRetryTest(response, context, method.Group, test.PreconditionProvided);
             var postTestResponse = await GetRetryTestAsync(response.Id);
             Assert.True(postTestResponse.Completed, "Expected retry test completed to be true, but was false.");
             if (postTestResponse.Completed)
             {
-                Console.WriteLine("####################    TEST COMPLETED SUCCESSFULLY   ##################");
+                Console.WriteLine("####################  " + method.Name + "  TEST COMPLETED SUCCESSFULLY   ##################");
             }
         }
         else
         {
             try
             {
+                Console.WriteLine("**************** STARTED TEST " + method.Name + " ********************");
                 RunRetryTest(response, context, method.Group, test.PreconditionProvided);
                 Assert.False(response.Completed);
-                if (!response.Completed)
-                {
-                    Console.WriteLine("####################    TEST COMPLETED SUCCESSFULLY   ##################");
-                }
             }
             catch (GoogleApiException ex) when (InstructionContainsErrorCode(ex.HttpStatusCode))
             {
+                Console.WriteLine("####################  " + method.Name + "  TEST COMPLETED SUCCESSFULLY   ##################");
                 // The instructions specified that the given status code would be returned.
                 // We just need to check that we weren't expecting this specific call to succeed.
             }
         }
-        Console.WriteLine("**********************************************************************");
+
         bool InstructionContainsErrorCode(HttpStatusCode statusCode) =>
             instructionList.Instructions.Contains($"return-{(int) statusCode}");
     }
