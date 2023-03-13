@@ -4,7 +4,8 @@ on:
   push:
     branches: [ main ] 
   pull_request:
-  workflow_dispatch:
+    paths:
+      - '/home/runner/work/google-cloud-dotnet/google-cloud-dotnet/apis/Google.Cloud.Storage.V1/**'
 
 jobs:
   test:
@@ -36,12 +37,6 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-      
-   # - name: Docker run  
-   #   run: docker run -d --name storage-testbench -p 9000:9000 gcr.io/cloud-devrel-public-resources/storage-testbench:latest 
-    
-  #  - name: Wait for the storage emulator
-  #    run: sleep 30
 
     - run: dotnet test Google.Cloud.Storage.V1.RetryConformanceTests.csproj
       env:
