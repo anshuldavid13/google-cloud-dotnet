@@ -2,8 +2,13 @@ name: Run Storage Retry conformance tests against service emulator
 
 on:
   push:
-    branches: [ main ] 
+    branches: 
+      - main
+    paths:
+      - '/home/runner/work/google-cloud-dotnet/**'
   pull_request:
+    paths:
+      - '/home/runner/work/google-cloud-dotnet/**'
 
 jobs:
   test:
