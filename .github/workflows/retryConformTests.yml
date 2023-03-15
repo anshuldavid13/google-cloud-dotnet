@@ -5,10 +5,10 @@ on:
     branches: 
       - main
     paths:
-      - '/home/runner/work/google-cloud-dotnet/google-cloud-dotnet/**'
+      - '/home/runner/work/google-cloud-dotnet/google-cloud-dotnet/'
   pull_request:
     paths:
-      - '/home/runner/work/google-cloud-dotnet/google-cloud-dotnet/**'
+      - '/home/runner/work/google-cloud-dotnet/google-cloud-dotnet/'
 
 jobs:
   test:
