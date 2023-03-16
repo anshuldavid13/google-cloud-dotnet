@@ -60,7 +60,7 @@ public class RetryConformanceTest
         var instructionList = testCase.InstructionList;
 
         Skip.If(test.Description.Contains("handle_complex_retries"));
-        Skip.If(instructionList.Instructions.Contains("return-reset-connection"));
+        //Skip.If(instructionList.Instructions.Contains("return-reset-connection"));
         Skip.If(method.Name.Contains("_acl") || method.Name == "storage.objects.compose" || method.Name == "storage.objects.insert" || method.Name == "storage.objects.copy");
 
         var context = CreateTestContext(method);
