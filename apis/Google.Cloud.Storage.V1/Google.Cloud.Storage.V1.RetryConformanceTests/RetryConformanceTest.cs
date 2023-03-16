@@ -68,19 +68,26 @@ public class RetryConformanceTest
 
         if (test.ExpectSuccess)
         {
+            Console.WriteLine("**************** STARTED TEST " + method.Name + " ********************");
             RunRetryTest(response, context, method.Group, test.PreconditionProvided);
             var postTestResponse = await GetRetryTestAsync(response.Id);
             Assert.True(postTestResponse.Completed, "Expected retry test completed to be true, but was false.");
+            if (postTestResponse.Completed)
+            {
+                Console.WriteLine("####################  " + method.Name + "  TEST COMPLETED SUCCESSFULLY   ##################");
+            }
         }
         else
         {
             try
             {
+                Console.WriteLine("**************** STARTED TEST " + method.Name + " ********************");
                 RunRetryTest(response, context, method.Group, test.PreconditionProvided);
                 Assert.False(response.Completed);
             }
             catch (GoogleApiException ex) when (InstructionContainsErrorCode(ex.HttpStatusCode))
             {
+                Console.WriteLine("#################### " + method.Name + " TEST COMPLETED SUCCESSFULLY ##################");
                 // The instructions specified that the given status code would be returned.
                 // We just need to check that we weren't expecting this specific call to succeed.
             }
