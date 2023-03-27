@@ -23,50 +23,46 @@ using Xunit;
 namespace Google.Cloud.Storage.V1.Tests;
 public class CustomRetryImplTest
 {
-
     [Fact]
     public void Check_TimingsNull()
     {
-        RetryOptions retryOptions = new RetryOptions(
-            retryTimings: null,
-            retryPredicate: RetryPredicate.FromErrorCodes(429, 502));
+        RetryTimings retryTimings = null;
+        RetryPredicate retryPredicate = RetryPredicate.DefaultErrorCodes;
 
-        RetryHelper(service => service.Buckets.Get("bucket"), client => client.GetBucket("bucket", new GetBucketOptions { RetryOptions = retryOptions }), retryOptions);
+        RetryOptions retryOptions = new RetryOptions(retryTimings, retryPredicate);
+
+        Assert.Equal(RetryTimings.Default, retryOptions.Timing);
     }
 
     [Fact]
     public void Check_PredicateNull()
     {
-        RetryOptions retryOptions = new RetryOptions(
-            retryTimings: new RetryTimings(initialBackoff: TimeSpan.FromSeconds(1),
-            maxBackoff: TimeSpan.FromSeconds(6), backoffMultiplier: 2),
-            retryPredicate: null);
+        RetryTimings retryTimings = RetryTimings.Default;
+        RetryPredicate retryPredicate = null;
 
-        RetryHelper(service => service.Buckets.Get("bucket"), client => client.GetBucket("bucket", new GetBucketOptions { RetryOptions = retryOptions }), retryOptions);
+        RetryOptions retryOptions = new RetryOptions(retryTimings, retryPredicate);
+
+        Assert.Equal(RetryPredicate.Never, retryOptions.Predicate);
     }
-
-    [Fact]
-    public void Check_OptionsNull() => RetryHelper(service => service.Buckets.Get("bucket"), client => client.GetBucket("bucket"), null);
 
     [Fact]
     public void Check_RetryfromErrorCodes()
     {
-        RetryOptions retryOptions = new RetryOptions(
-            retryTimings: new RetryTimings(initialBackoff: TimeSpan.FromSeconds(1),
-            maxBackoff: TimeSpan.FromSeconds(6), backoffMultiplier: 2),
-            retryPredicate: RetryPredicate.FromErrorCodes(429, 502));
+        var retryPredicate = RetryPredicate.FromErrorCodes(429, 502);
 
-        RetryHelper(service => service.Buckets.Get("bucket"), client => client.GetBucket("bucket", new GetBucketOptions { RetryOptions = retryOptions }), retryOptions);
+        Assert.True(retryPredicate.ShouldRetry(429));
+        Assert.True(retryPredicate.ShouldRetry(502));
+        Assert.False(retryPredicate.ShouldRetry(500));
     }
 
     [Fact]
     public void Check_RetryfromErrorPredicate()
     {
-        RetryOptions retryOptions = new RetryOptions(
-            retryTimings: RetryTimings.Default.WithMaxBackoff(TimeSpan.FromSeconds(10)),
-            retryPredicate: RetryPredicate.FromErrorCodePredicate(errorCode => errorCode >= 500));
+        var retryPredicate = RetryPredicate.FromErrorCodePredicate(errorCode => errorCode >= 500);
 
-        RetryHelper(service => service.Buckets.Get("bucket"), client => client.GetBucket("bucket", new GetBucketOptions { RetryOptions = retryOptions }), retryOptions);
+        Assert.False(retryPredicate.ShouldRetry(429));
+        Assert.True(retryPredicate.ShouldRetry(502));
+        Assert.True(retryPredicate.ShouldRetry(500));
     }
 
     [Fact]
@@ -103,13 +99,13 @@ public class CustomRetryImplTest
         var request = requestProvider(service);
         retryOptions ??= RetryOptions.IdempotentRetryOptions;
 
-        if (retryOptions.RetryPredicate.ShouldRetry((int) errorCode))
+        if (retryOptions.Predicate.ShouldRetry((int) errorCode))
         {
             int retrycount = 0;
-            TimeSpan delay = retryOptions.RetryTimings.InitialBackoff;
-            while (delay < retryOptions.RetryTimings.MaxBackoff && retrycount < 3)
+            TimeSpan delay = retryOptions.Timing.InitialBackoff;
+            while (delay < retryOptions.Timing.MaxBackoff && retrycount < 3)
             {
-                delay = retryOptions.RetryTimings.InitialBackoff + TimeSpan.FromSeconds((retrycount) * retryOptions.RetryTimings.BackoffMultiplier);
+                delay = retryOptions.Timing.InitialBackoff + TimeSpan.FromSeconds((retrycount) * retryOptions.Timing.BackoffMultiplier);
                 service.ExpectRequest(request, errorCode);
                 retrycount++;
             }

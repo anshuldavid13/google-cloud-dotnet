@@ -18,7 +18,7 @@ using System.Linq;
 namespace Google.Cloud.Storage.V1;
 
 /// <summary>
-/// It specifies the configurations based on which the user might want to retry the operations in case of failure.
+/// It specifies the configurations based on which the user might want to retry the operations in case of failure. These are immutable.
 /// </summary>
 public sealed class RetryPredicate
 {
@@ -34,12 +34,12 @@ public sealed class RetryPredicate
                 504 // Gateway timeout
         );
 
-    private Func<int, bool> _predicate;
+    private readonly Func<int, bool> _predicate;
 
     /// <summary>
     /// Returns a Retry Predicate which will ensure that the operation will never retry in case of failure.
     /// </summary>
-    public static RetryPredicate EmptyPredicate { get; } = RetryPredicate.FromErrorCodes();
+    public static RetryPredicate Never { get; } = RetryPredicate.FromErrorCodes();
 
     /// <summary>
     /// It configures retrying based on the specified custom retriable error codes.
@@ -48,7 +48,7 @@ public sealed class RetryPredicate
     /// </summary>
     /// <param name="errorCodes">Error codes on which to retry.</param>
     /// <returns>Returns the retry predicate with the custom error codes specified.</returns>
-    public static RetryPredicate FromErrorCodes(params int[] errorCodes) => new() { _predicate = x => errorCodes.Contains(x) };
+    public static RetryPredicate FromErrorCodes(params int[] errorCodes) => new(x => errorCodes.Contains(x));
 
     /// <summary>
     /// It configures the conditions based on which the operation is retried in case of failure.
@@ -56,7 +56,9 @@ public sealed class RetryPredicate
     /// </summary>
     /// <param name="predicate">Predicate based on which to decide whether to retry or not.</param>
     /// <returns>Returns the retry predicate with the conditions specified for retrying.</returns>
-    public static RetryPredicate FromErrorCodePredicate(Func<int, bool> predicate) => new() { _predicate = predicate };
+    public static RetryPredicate FromErrorCodePredicate(Func<int, bool> predicate) => new(predicate);
 
     internal bool ShouldRetry(int statusCode) => _predicate.Invoke(statusCode);
+
+    private RetryPredicate(Func<int, bool> predicate) => _predicate = predicate;
 }

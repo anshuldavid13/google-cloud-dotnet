@@ -15,36 +15,36 @@
 namespace Google.Cloud.Storage.V1;
 
 /// <summary>
-/// These options can be used to pass custom retry configuration for each API request in case of failure.
-/// These determine whether and how the retry would happen.
+/// Options used to indicate the retry configuration for an API request in case of failure.
+/// These determine whether and how the request should be retried.
 /// </summary>
 public sealed class RetryOptions
 {
     /// <summary>
-    /// The default configuration used for retry upon failure.
+    /// Options used by default for idempotent operations upon failure.
     /// It has all retry timings reset to defaults and retry predicate based on default error codes.
     /// </summary>
     public static RetryOptions IdempotentRetryOptions { get; } = new RetryOptions(RetryTimings.Default, RetryPredicate.DefaultErrorCodes);
 
     /// <summary>
-    /// This configuration ensures that the api request is never retried on failure.
+    /// This configuration ensures that the API request is never retried on failure.
     /// </summary>
-    public static RetryOptions Never { get; } = new RetryOptions(new RetryTimings(), RetryPredicate.EmptyPredicate);
+    public static RetryOptions Never { get; } = new RetryOptions(RetryTimings.Default, RetryPredicate.Never);
 
-    internal RetryPredicate RetryPredicate { get; }
-    internal RetryTimings RetryTimings { get; }
+    internal RetryPredicate Predicate { get; }
+    internal RetryTimings Timing { get; }
 
     internal static RetryOptions MaybeIdempotent(object condition) =>
         condition is null ? Never : IdempotentRetryOptions;
 
     /// <summary>
-    /// Constructor to pass the custom configurations for retrying on failure.
+    /// Creates an instance based on the given timing and predicate.
     /// </summary>
-    /// <param name="retryTimings">Custom retry timings configurations in case of retrying.</param>
-    /// <param name="retryPredicate">Custom retry predicate configurations to determine when to retry.</param>
+    /// <param name="retryTimings">Custom retry timings configurations in case of retrying. It can be null in which case default retry timings <see cref="RetryTimings.Default"/> will be used.</param>
+    /// <param name="retryPredicate">Custom retry predicate configurations to determine when to retry.It can be null in which case default error codes <see cref="RetryPredicate.DefaultErrorCodes"/> will be used for retrying.</param>
     public RetryOptions(RetryTimings retryTimings, RetryPredicate retryPredicate)
     {
-        RetryTimings = retryTimings ?? RetryTimings.Default;
-        RetryPredicate = retryPredicate ?? RetryPredicate.EmptyPredicate;
+        Timing = retryTimings ?? RetryTimings.Default;
+        Predicate = retryPredicate ?? RetryPredicate.Never;
     }
 }

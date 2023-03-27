@@ -13,41 +13,42 @@
 // limitations under the License.
 
 using System;
+using System.Threading.Tasks;
 
 namespace Google.Cloud.Storage.V1;
 
 /// <summary>
-/// These specify the custom timing configurations for retrying in case of failure of the API request.
+/// Options to control the delays between attempts when retrying failed API requests. These are immutable.
 /// </summary>
 public sealed class RetryTimings
 {
     /// <summary>
-    /// The backoff time between the first attempt and the first retry. It must be non-negative. 
+    /// The backoff time between the first attempt and the first retry.
     /// </summary>
-    public TimeSpan InitialBackoff { get; private set; }
+    public TimeSpan InitialBackoff { get; }
 
     /// <summary>
-    /// Maximum backoff time between retries. It must be at least as much as initialBackoff.
+    /// Maximum backoff time between retries.
     /// </summary>
-    public TimeSpan MaxBackoff { get; private set; }
+    public TimeSpan MaxBackoff { get; }
 
     /// <summary>
-    /// The multiplier to apply to the backoff on each iteration. It is always greater than or equal to 1.0.
+    /// The multiplier to apply to the backoff on each iteration.
     /// </summary>
-    public double BackoffMultiplier { get; private set; }
+    public double BackoffMultiplier { get; }
 
     /// <summary>
-    /// The default initial backoff time between the first attempt and the first retry. It is set to 1 second by default.
+    /// The default initial backoff time between the first attempt and the first retry. The default is 1 second.
     /// </summary>
     public static TimeSpan DefaultInitialBackoff { get; } = TimeSpan.FromSeconds(1);
 
     /// <summary>
-    /// The default maximum backoff time between retries. It is set to 32 seconds by default.
+    /// The default maximum backoff time between retries. The default is 32 seconds.
     /// </summary>
     public static TimeSpan DefaultMaxBackoff { get; } = TimeSpan.FromSeconds(32);
 
     /// <summary>
-    /// The default maximum backoff multiplier to be applied on each iteration. It is set to 2 by default.
+    /// The default maximum backoff multiplier to be applied on each iteration. The default is 2.
     /// </summary>
     public static double DefaultBackoffMultiplier { get; } = 2;
 
@@ -56,53 +57,31 @@ public sealed class RetryTimings
     /// </summary>
     public static RetryTimings Default { get; } = new();
 
-    internal RetryTimings Clone() => new()
-    {
-        InitialBackoff = InitialBackoff,
-        MaxBackoff = MaxBackoff,
-        BackoffMultiplier = BackoffMultiplier
-    };
-
     /// <summary>
     /// Returns the existing retry timings configurations using the specified initial backoff.
     /// </summary>
-    /// <param name="initialBackoff">Custom initial Backoff for retry.</param>
-    /// <returns>Retry timings with updated initial backoff.</returns>
-    public RetryTimings WithInitialBackoff(TimeSpan initialBackoff)
-    {
-        var clone = Clone();
-        clone.InitialBackoff = initialBackoff;
-        return clone;
-    }
+    /// <param name="initialBackoff">The new value for <see cref="InitialBackoff"/>.</param>
+    /// <returns>A new instance based on the existing values, but with the specified initial backoff.</returns>
+    public RetryTimings WithInitialBackoff(TimeSpan initialBackoff) =>
+        new(initialBackoff: initialBackoff, maxBackoff: MaxBackoff, backoffMultiplier: BackoffMultiplier);
 
     /// <summary>
     /// Returns the existing retry timings configurations using the specified maximum backoff.
     /// </summary>
-    /// <param name="maxBackoff">Custom maximum Backoff for retry.</param>
-    /// <returns>Retry timings with updated maximum backoff timing.</returns>
-    public RetryTimings WithMaxBackoff(TimeSpan maxBackoff)
-    {
-        var clone = Clone();
-        clone.MaxBackoff = maxBackoff;
-        return clone;
-    }
+    /// <param name="maxBackoff">The new value for <see cref="MaxBackoff"/>.</param>
+    /// <returns>A new instance based on the existing values, but with the specified max backoff.</returns>
+    public RetryTimings WithMaxBackoff(TimeSpan maxBackoff) =>
+         new(initialBackoff: InitialBackoff, maxBackoff: maxBackoff, backoffMultiplier: BackoffMultiplier);
 
     /// <summary>
     /// Returns the existing retry timings configurations using the specified backoff multiplier.
     /// </summary>
-    /// <param name="backoffMultiplier">Custom retry delay Backoff Multiplier for retry.</param>
-    /// <returns>Retry timings with updated backoff multiplier.</returns>
-    public RetryTimings WithBackoffMultiplier(double backoffMultiplier)
-    {
-        var clone = Clone();
-        clone.BackoffMultiplier = backoffMultiplier;
-        return clone;
-    }
+    /// <param name="backoffMultiplier">The new value for <see cref="BackoffMultiplier"/>.</param>
+    /// <returns>A new instance based on the existing values, but with the specified backoff multiplier.</returns>
+    public RetryTimings WithBackoffMultiplier(double backoffMultiplier) =>
+        new(initialBackoff: InitialBackoff, maxBackoff: MaxBackoff, backoffMultiplier: backoffMultiplier);
 
-    /// <summary>
-    /// Retry Timings constructor which sets all values to their respective defaults.
-    /// </summary>
-    public RetryTimings()
+    private RetryTimings()
     {
         InitialBackoff = RetryTimings.DefaultInitialBackoff;
         MaxBackoff = RetryTimings.DefaultMaxBackoff;
@@ -110,15 +89,21 @@ public sealed class RetryTimings
     }
 
     /// <summary>
-    /// Constructor to pass the custom timing configurations for retrying.
+    /// Creates an instance with the specified values.
     /// </summary>
-    /// <param name="initialBackoff">Initial Backoff for retry.</param>
-    /// <param name="maxBackoff">Maximum Backoff for retry.</param>
-    /// <param name="backoffMultiplier">Retry delay Backoff Multiplier for retry.</param>
+    /// <param name="initialBackoff">Initial backoff for retry. It must be non-negative.</param>
+    /// <param name="maxBackoff">Maximum backoff for retry. This is never smaller than <paramref name="initialBackoff" />.</param>
+    /// <param name="backoffMultiplier">Backoff multiplier for retry. It is always greater than or equal to 1.0.</param>
     public RetryTimings(TimeSpan initialBackoff, TimeSpan maxBackoff, double backoffMultiplier)
     {
-        InitialBackoff = initialBackoff >= TimeSpan.Zero ?initialBackoff : throw new ArgumentOutOfRangeException("InitialBackoff value must be non-negative.") ;
-        MaxBackoff = maxBackoff >= initialBackoff ? maxBackoff : throw new ArgumentOutOfRangeException("MaxBackoff value must be at least as much as initialBackoff.");
-        BackoffMultiplier = backoffMultiplier >= 1 ? backoffMultiplier : throw new ArgumentOutOfRangeException("BackoffMultiplier value must atleast be 1.");
+        InitialBackoff = initialBackoff >= TimeSpan.Zero ? initialBackoff : throw new ArgumentOutOfRangeException(nameof(initialBackoff), $"'{InitialBackoff}' parameter value must be non-negative.");
+        MaxBackoff = maxBackoff >= initialBackoff ? maxBackoff : throw new ArgumentOutOfRangeException(nameof(maxBackoff), $"{MaxBackoff} parameter value must be at least as long as initialBackoff.");
+        BackoffMultiplier = backoffMultiplier >= 1 ? backoffMultiplier : throw new ArgumentOutOfRangeException(nameof(backoffMultiplier), $"{BackoffMultiplier} parameter value must at least be 1.");
+    }
+
+    internal TimeSpan GetDelay(int failureCount)
+    {
+        TimeSpan delay = failureCount > 1 ? InitialBackoff + TimeSpan.FromSeconds(Math.Pow(2.0, failureCount - 2) * BackoffMultiplier) : InitialBackoff;
+        return (delay > MaxBackoff) ? MaxBackoff : delay;
     }
 }
