@@ -15,6 +15,7 @@
 using Google.Cloud.Firestore.V1;
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types.Aggregation.Types;
+using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
 
 namespace Google.Cloud.Firestore;
 
@@ -28,8 +29,57 @@ internal static class Aggregates
     /// The actual value is not meaningful, but will be used to get the count out of the <see cref="RunAggregationQueryResponse"/>.
     /// </summary>
     internal const string CountAlias = "Count";
+
+    internal const string AvgAlias = "Avg";
+
+    internal const string SumAlias = "Sum";
+
     internal static Aggregation CreateCountAggregate()
     {
         return new Aggregation { Count = new Count(), Alias = CountAlias };
     }
+
+    //TODO: CHECK FOR NULL FIELDS NAMES IN INPUT AND IN ALIAS
+
+    internal static Aggregation CreateSumAggregate(string field)
+    {
+        return new Aggregation { Sum = new Sum() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = SumAlias };
+    }
+
+    internal static Aggregation CreateSumAggregate(FieldPath fieldPath)
+    {
+        return new Aggregation { Sum = new Sum() { Field = fieldPath.ToFieldReference() }, Alias = SumAlias };
+    }
+
+    internal static Aggregation CreateAvgAggregate(string field)
+    {
+        return new Aggregation { Avg = new Avg() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = AvgAlias };
+    }
+
+    internal static Aggregation CreateAvgAggregate(FieldPath fieldPath)
+    {
+        return new Aggregation { Avg = new Avg() { Field = fieldPath.ToFieldReference() }, Alias = AvgAlias };
+    }
+
+    /*
+    internal static Aggregation CreateSumAggregate(string field)
+    {
+        return new Aggregation { Sum = new Sum() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = SumAlias + "_" + field };
+    }
+
+    internal static Aggregation CreateSumAggregate(FieldPath fieldPath)
+    {
+        return new Aggregation { Sum = new Sum() { Field = fieldPath.ToFieldReference() }, Alias = SumAlias + "_" + fieldPath.EncodedPath };
+    }
+
+    internal static Aggregation CreateAvgAggregate(string field)
+    {
+        return new Aggregation { Avg = new Avg() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = AvgAlias + "_" + field };
+    }
+
+    internal static Aggregation CreateAvgAggregate(FieldPath fieldPath)
+    {
+        return new Aggregation { Avg = new Avg() { Field = fieldPath.ToFieldReference() }, Alias = AvgAlias + "_" + fieldPath.EncodedPath };
+    }
+    */
 }

@@ -13,7 +13,11 @@
 // limitations under the License.
 
 using Google.Api.Gax;
+using Google.Cloud.Firestore.V1;
+using Google.Type;
 using System;
+using System.Collections.Generic;
+using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 
 namespace Google.Cloud.Firestore;
 
@@ -38,12 +42,75 @@ public sealed class AggregateQuerySnapshot : IEquatable<AggregateQuerySnapshot>
     /// </summary>
     public long? Count { get; }
 
-    internal AggregateQuerySnapshot(AggregateQuery query, Timestamp readTime, long? count)
+    /// <summary>
+    /// 
+    /// </summary>
+    public Dictionary<string, Value> Data { get; }
+
+    internal AggregateQuerySnapshot(AggregateQuery query, Timestamp readTime, long? count, Dictionary<string, Value> data)
     {
         Query = query;
         ReadTime = readTime;
-        Count = count;
+        //TODO USE DIRECT GETTER
+        Count = getCount();
+        Data = data;
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public long getCount()
+    {
+        Aggregation countField = Aggregates.CreateCountAggregate();
+        Object value = countField.Count;
+        if (value == null)
+        {
+            // TODO WITH NAME OF VARIABLE
+            throw new ArgumentNullException("count");
+        }
+        /*
+         * TODO FIX IT!!!!
+        else if (typeof(value) != long) {
+            throw new ArgumentException("Count should be long");
+        }
+        */
+        return (long) value;
+    }
+
+    /*
+    public object getData(Aggregation aggregateField)
+    {
+        if (!Data.ContainsKey(aggregateField.Alias))
+        {
+            throw new IllegalArgumentException(
+                "'"
+                    + aggregateField.getOperator()
+                    + "("
+                    + aggregateField.getFieldPath()
+                    + ")"
+                    + "' was not requested in the aggregation query.");
+        }
+        Value value = data.get(aggregateField.getAlias());
+        if (value.hasNullValue())
+        {
+            return null;
+        }
+        else if (value.hasDoubleValue())
+        {
+            return value.getDoubleValue();
+        }
+        else if (value.hasIntegerValue())
+        {
+            return value.getIntegerValue();
+        }
+        else
+        {
+            throw new IllegalStateException("Found aggregation result that is not an integer nor double");
+        }
+    }
+    */
 
     /// <summary> 
     /// Determines whether <paramref name="other"/> is equal to this instance.

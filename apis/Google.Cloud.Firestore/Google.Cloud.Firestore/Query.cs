@@ -424,6 +424,24 @@ namespace Google.Cloud.Firestore
         public AggregateQuery Count() =>
             new AggregateQuery(this).WithAggregation(Aggregates.CreateCountAggregate());
 
+        ///TODO ADD FIELD PATH METHODS AS WELL
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public AggregateQuery Sum(string field) =>
+            new AggregateQuery(this).WithAggregation(Aggregates.CreateSumAggregate(field));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public AggregateQuery Avg(string field) =>
+            new AggregateQuery(this).WithAggregation(Aggregates.CreateAvgAggregate(field));
+
         /// <summary>
         /// Add the given filter to this query.
         /// </summary>
