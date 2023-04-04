@@ -33,6 +33,11 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
     private readonly Query _query;
     private readonly IReadOnlyList<Aggregation> _aggregations;
 
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public Dictionary<string, Value> Data { get; }
+
     internal AggregateQuery(Query query)
     {
         _query = GaxPreconditions.CheckNotNull(query, nameof(query));
@@ -67,11 +72,16 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
         long? count = null;
         await responseStream.ForEachAsync(response => ProcessResponse(response), cancellationToken).ConfigureAwait(false);
         GaxPreconditions.CheckState(readTime != null, "The stream returned from RunAggregationQuery did not provide a read timestamp.");
-        return new AggregateQuerySnapshot(this, readTime.Value, count);
+        return new AggregateQuerySnapshot(this, readTime.Value, count, Data);
 
         void ProcessResponse(RunAggregationQueryResponse response)
         {
             if (count is null && response.Result.AggregateFields?.TryGetValue(Aggregates.CountAlias, out var countValue) == true)
+            {
+                GaxPreconditions.CheckState(countValue.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue, "The count was not an integer.");
+                count = countValue.IntegerValue;
+            }
+            if (!Data.ContainsKey() && response.Result.AggregateFields?.TryGetValue(Aggregates.CountAlias, out var countValue) == true)
             {
                 GaxPreconditions.CheckState(countValue.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue, "The count was not an integer.");
                 count = countValue.IntegerValue;

@@ -13,9 +13,13 @@
 // limitations under the License.
 
 using Google.Cloud.Firestore.V1;
+using System.Collections.Generic;
+using System.Reflection;
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types.Aggregation.Types;
+using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types.Aggregation.OperatorOneofCase;
 using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
+using Nest;
 
 namespace Google.Cloud.Firestore;
 
@@ -28,7 +32,7 @@ internal static class Aggregates
     /// The "alias" to specify in the <see cref="RunAggregationQueryRequest"/> proto when running a count query.
     /// The actual value is not meaningful, but will be used to get the count out of the <see cref="RunAggregationQueryResponse"/>.
     /// </summary>
-    internal const string CountAlias = "Count";
+    internal const string CountAlias = "Count";    
 
     internal const string AvgAlias = "Avg";
 
@@ -40,28 +44,7 @@ internal static class Aggregates
     }
 
     //TODO: CHECK FOR NULL FIELDS NAMES IN INPUT AND IN ALIAS
-
-    internal static Aggregation CreateSumAggregate(string field)
-    {
-        return new Aggregation { Sum = new Sum() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = SumAlias };
-    }
-
-    internal static Aggregation CreateSumAggregate(FieldPath fieldPath)
-    {
-        return new Aggregation { Sum = new Sum() { Field = fieldPath.ToFieldReference() }, Alias = SumAlias };
-    }
-
-    internal static Aggregation CreateAvgAggregate(string field)
-    {
-        return new Aggregation { Avg = new Avg() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = AvgAlias };
-    }
-
-    internal static Aggregation CreateAvgAggregate(FieldPath fieldPath)
-    {
-        return new Aggregation { Avg = new Avg() { Field = fieldPath.ToFieldReference() }, Alias = AvgAlias };
-    }
-
-    /*
+   
     internal static Aggregation CreateSumAggregate(string field)
     {
         return new Aggregation { Sum = new Sum() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = SumAlias + "_" + field };
@@ -81,5 +64,6 @@ internal static class Aggregates
     {
         return new Aggregation { Avg = new Avg() { Field = fieldPath.ToFieldReference() }, Alias = AvgAlias + "_" + fieldPath.EncodedPath };
     }
-    */
+
+    
 }

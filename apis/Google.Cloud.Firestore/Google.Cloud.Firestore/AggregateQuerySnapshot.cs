@@ -79,10 +79,10 @@ public sealed class AggregateQuerySnapshot : IEquatable<AggregateQuerySnapshot>
         return (long) value;
     }
 
-    /*
+    
     public object getData(Aggregation aggregateField)
     {
-        if (!Data.ContainsKey(aggregateField.Alias))
+        if (!Data.ContainsKey(aggregateField.OperatorCase))
         {
             throw new IllegalArgumentException(
                 "'"
@@ -110,7 +110,7 @@ public sealed class AggregateQuerySnapshot : IEquatable<AggregateQuerySnapshot>
             throw new IllegalStateException("Found aggregation result that is not an integer nor double");
         }
     }
-    */
+    
 
     /// <summary> 
     /// Determines whether <paramref name="other"/> is equal to this instance.
