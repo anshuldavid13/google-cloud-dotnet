@@ -51,8 +51,9 @@ public sealed class AggregateQuerySnapshot : IEquatable<AggregateQuerySnapshot>
     {
         Query = query;
         ReadTime = readTime;
+        Count = count;
         //TODO USE DIRECT GETTER
-        Count = getCount();
+        //Count = getCount();
         Data = data;
     }
 
@@ -79,38 +80,48 @@ public sealed class AggregateQuerySnapshot : IEquatable<AggregateQuerySnapshot>
         return (long) value;
     }
 
-    
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="aggregateField"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public object getData(Aggregation aggregateField)
     {
-        if (!Data.ContainsKey(aggregateField.OperatorCase))
+        if (!Data.ContainsKey(aggregateField.Alias))
         {
-            throw new IllegalArgumentException(
-                "'"
-                    + aggregateField.getOperator()
-                    + "("
-                    + aggregateField.getFieldPath()
-                    + ")"
-                    + "' was not requested in the aggregation query.");
+            // TODO Detail
+            throw new ArgumentException();
         }
-        Value value = data.get(aggregateField.getAlias());
-        if (value.hasNullValue())
-        {
-            return null;
-        }
-        else if (value.hasDoubleValue())
-        {
-            return value.getDoubleValue();
-        }
-        else if (value.hasIntegerValue())
-        {
-            return value.getIntegerValue();
-        }
-        else
-        {
-            throw new IllegalStateException("Found aggregation result that is not an integer nor double");
-        }
+        Value value = Data[aggregateField.Alias];// (aggregateField.Alias);//.get(aggregateField.getAlias());
+        return value;
     }
-    
+        /*
+       if (value is null)
+       {
+           return null;
+       }
+
+        * 
+        * TODO TYPES
+       else if (value.DoubleValue)
+       {
+           return value.getDoubleValue();
+       }
+       else if (value.hasIntegerValue())
+       {
+           return value.getIntegerValue();
+       }
+       else
+       {
+           //TODO
+           throw new ArgumentException();
+           //throw new IllegalStateException("Found aggregation result that is not an integer nor double");
+       }*/
+   
+
+
 
     /// <summary> 
     /// Determines whether <paramref name="other"/> is equal to this instance.

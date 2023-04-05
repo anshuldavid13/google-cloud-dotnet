@@ -437,10 +437,26 @@ namespace Google.Cloud.Firestore
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="fieldPath"></param>
+        /// <returns></returns>
+        public AggregateQuery Sum(FieldPath fieldPath) =>
+            new AggregateQuery(this).WithAggregation(Aggregates.CreateSumAggregate(fieldPath));
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="field"></param>
         /// <returns></returns>
         public AggregateQuery Avg(string field) =>
             new AggregateQuery(this).WithAggregation(Aggregates.CreateAvgAggregate(field));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fieldPath"></param>
+        /// <returns></returns>
+        public AggregateQuery Avg(FieldPath fieldPath) =>
+            new AggregateQuery(this).WithAggregation(Aggregates.CreateAvgAggregate(fieldPath));
 
         /// <summary>
         /// Add the given filter to this query.

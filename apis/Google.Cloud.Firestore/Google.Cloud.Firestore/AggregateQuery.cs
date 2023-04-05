@@ -36,7 +36,7 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
     /// <summary>
     /// TODO
     /// </summary>
-    public Dictionary<string, Value> Data { get; }
+    //public Dictionary<string, Value> Data { get; }
 
     internal AggregateQuery(Query query)
     {
@@ -70,9 +70,10 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
         IAsyncEnumerable<RunAggregationQueryResponse> responseStream = GetAggregationQueryResponseStreamAsync(transactionId, cancellationToken);
         Timestamp? readTime = null;
         long? count = null;
+        Dictionary<string, Value> data = new Dictionary<string, Value>();
         await responseStream.ForEachAsync(response => ProcessResponse(response), cancellationToken).ConfigureAwait(false);
         GaxPreconditions.CheckState(readTime != null, "The stream returned from RunAggregationQuery did not provide a read timestamp.");
-        return new AggregateQuerySnapshot(this, readTime.Value, count, Data);
+        return new AggregateQuerySnapshot(this, readTime.Value, count, data);
 
         void ProcessResponse(RunAggregationQueryResponse response)
         {
@@ -81,10 +82,15 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
                 GaxPreconditions.CheckState(countValue.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue, "The count was not an integer.");
                 count = countValue.IntegerValue;
             }
-            if (!Data.ContainsKey() && response.Result.AggregateFields?.TryGetValue(Aggregates.CountAlias, out var countValue) == true)
+            else if (response.Result.AggregateFields?.TryGetValue(Aggregates.SumAlias, out var sumValue) == true)
             {
-                GaxPreconditions.CheckState(countValue.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue, "The count was not an integer.");
-                count = countValue.IntegerValue;
+                GaxPreconditions.CheckState(sumValue.ValueTypeCase == Value.ValueTypeOneofCase.DoubleValue, "The sum was not a double.");
+                data.Add(Aggregates.SumAlias, sumValue);
+            }
+            else if (response.Result.AggregateFields?.TryGetValue(Aggregates.AvgAlias, out var avgValue) == true)
+            {
+                GaxPreconditions.CheckState(avgValue.ValueTypeCase == Value.ValueTypeOneofCase.DoubleValue, "The avg was not an double.");
+                data.Add(Aggregates.AvgAlias, avgValue);
             }
             readTime ??= Timestamp.FromProtoOrNull(response.ReadTime);
         }

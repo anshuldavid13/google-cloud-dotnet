@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,28 @@ public class AggregateQueryTest
     }
 
     [Fact]
+    public void Test1ToStructuredAggregationQuery()
+    {
+        var expectedStructuredAggregationQuery = new StructuredAggregationQuery
+        {
+            StructuredQuery = s_query.ToStructuredQuery(),
+            Aggregations = { new Aggregation { Alias = "Sum_foo", Sum = new Sum() { Field = FieldPath.FromDotSeparatedString("foo").ToFieldReference() } } }
+        };
+        Assert.Equal(expectedStructuredAggregationQuery, s_query.Sum("foo").ToStructuredAggregationQuery());
+    }
+
+    [Fact]
+    public void Test2ToStructuredAggregationQuery()
+    {
+        var expectedStructuredAggregationQuery = new StructuredAggregationQuery
+        {
+            StructuredQuery = s_query.ToStructuredQuery(),
+            Aggregations = { new Aggregation { Alias = "Avg_foo", Avg = new Avg() { Field = FieldPath.FromDotSeparatedString("foo").ToFieldReference() } } }
+        };
+        Assert.Equal(expectedStructuredAggregationQuery, s_query.Avg("foo").ToStructuredAggregationQuery());
+    }
+
+    [Fact]
     public async Task GetSnapshotAsync_VerifySnapshotMembers()
     {
         Mock<FirestoreClient> mock = new() { CallBase = true };
@@ -53,6 +75,33 @@ public class AggregateQueryTest
             {
                 StructuredQuery = query.ToStructuredQuery(),
                 Aggregations = { new Aggregation { Alias = "Count", Count = new Count() } }
+            }
+        };
+        var response = new FakeAggregationQueryStream(new[]
+        {
+            new RunAggregationQueryResponse { ReadTime = sampleReadTime, Result = new AggregationResult() }
+        });
+        mock.Setup(c => c.RunAggregationQuery(request, It.IsAny<CallSettings>())).Returns(response);
+        var aggregateQuery = query.Count();
+        var snapshot = await aggregateQuery.GetSnapshotAsync();
+        Assert.Equal(aggregateQuery, snapshot.Query);
+        Assert.Equal(Timestamp.FromProto(sampleReadTime), snapshot.ReadTime);
+    }
+
+    [Fact]
+    public async Task Get1SnapshotAsync_VerifySnapshotMembers()
+    {
+        Mock<FirestoreClient> mock = new() { CallBase = true };
+        var db = FirestoreDb.Create("proj", "db", mock.Object);
+        var query = db.Collection("col").Select("Name");
+        var sampleReadTime = CreateProtoTimestamp(1, 3);
+        var request = new RunAggregationQueryRequest
+        {
+            Parent = query.ParentPath,
+            StructuredAggregationQuery = new StructuredAggregationQuery
+            {
+                StructuredQuery = query.ToStructuredQuery(),
+                Aggregations = { new Aggregation { Alias = "Sum_col", Sum = new Sum() { Field = FieldPath.FromDotSeparatedString("col").ToFieldReference() } } }
             }
         };
         var response = new FakeAggregationQueryStream(new[]

@@ -27,7 +27,7 @@ public class AggregateQuerySnapshotTest
         AggregateQuery aggQuery = s_db.Collection("col").Count();
         var sampleReadTime = Timestamp.FromProto(CreateProtoTimestamp(1, 2));
         int sampleCount = 10;
-        var aggQuerySnapshot = new AggregateQuerySnapshot(aggQuery, sampleReadTime, sampleCount);
+        var aggQuerySnapshot = new AggregateQuerySnapshot(aggQuery, sampleReadTime, sampleCount,null);
         Assert.Equal(sampleCount, aggQuerySnapshot.Count);
         Assert.Equal(sampleReadTime, aggQuerySnapshot.ReadTime);
         Assert.Equal(aggQuery, aggQuerySnapshot.Query);
@@ -40,22 +40,22 @@ public class AggregateQuerySnapshotTest
         AggregateQuery aggQuery2 = s_db.Collection("col1").Count();
         var sampleReadTime = Timestamp.FromProto(CreateProtoTimestamp(1, 2));
         int sampleCount = 10;
-        var control = new AggregateQuerySnapshot(aggQuery1, sampleReadTime, sampleCount);
+        var control = new AggregateQuerySnapshot(aggQuery1, sampleReadTime, sampleCount,null);
 
         EqualityTester.AssertEqual(control,
             equal: new[] {
                 // All the members are equal.
-                new AggregateQuerySnapshot(s_db.Collection("col").Count(), Timestamp.FromProto(CreateProtoTimestamp(1, 2)), 10)
+                new AggregateQuerySnapshot(s_db.Collection("col").Count(), Timestamp.FromProto(CreateProtoTimestamp(1, 2)), 10, null)
             },
             unequal: new[] {
                 // Unequal aggregate query
-                new AggregateQuerySnapshot(aggQuery2, sampleReadTime, sampleCount),
+                new AggregateQuerySnapshot(aggQuery2, sampleReadTime, sampleCount, null),
                 // Null count.
-                new AggregateQuerySnapshot(aggQuery2, sampleReadTime, null),
+                new AggregateQuerySnapshot(aggQuery2, sampleReadTime, null,null),
                 // Same aggregate query and count but different read time. 
-                new AggregateQuerySnapshot(s_db.Collection("col").Count(), Timestamp.FromProto(CreateProtoTimestamp(3, 4)), sampleCount),
+                new AggregateQuerySnapshot(s_db.Collection("col").Count(), Timestamp.FromProto(CreateProtoTimestamp(3, 4)), sampleCount,null),
                 // Same aggregate query but different read time and count.
-                new AggregateQuerySnapshot(s_db.Collection("col").Count(), Timestamp.FromProto(CreateProtoTimestamp(3, 4)), 20)
+                new AggregateQuerySnapshot(s_db.Collection("col").Count(), Timestamp.FromProto(CreateProtoTimestamp(3, 4)), 20,null)
             });
     }
 }
