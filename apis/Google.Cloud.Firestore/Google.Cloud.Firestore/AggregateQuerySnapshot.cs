@@ -80,21 +80,20 @@ public sealed class AggregateQuerySnapshot : IEquatable<AggregateQuerySnapshot>
         return (long) value;
     }
 
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="aggregateField"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    public object getData(Aggregation aggregateField)
+/// <summary>
+/// 
+/// </summary>
+/// <param name="alias"></param>
+/// <returns></returns>
+/// <exception cref="ArgumentException"></exception>
+    public object getData(string alias)
     {
-        if (!Data.ContainsKey(aggregateField.Alias))
+        if (!Data.ContainsKey(alias))
         {
             // TODO Detail
             throw new ArgumentException();
         }
-        Value value = Data[aggregateField.Alias];// (aggregateField.Alias);//.get(aggregateField.getAlias());
+        Value value = Data[alias];// (aggregateField.Alias);//.get(aggregateField.getAlias());
         return value;
     }
         /*
