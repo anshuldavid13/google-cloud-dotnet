@@ -82,6 +82,8 @@ namespace Google.Cloud.Spanner.Admin.Database.V1 {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::Google.Cloud.Spanner.Admin.Database.V1.Database> __Marshaller_google_spanner_admin_database_v1_Database = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::Google.Cloud.Spanner.Admin.Database.V1.Database.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest> __Marshaller_google_spanner_admin_database_v1_UpdateDatabaseRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseDdlRequest> __Marshaller_google_spanner_admin_database_v1_UpdateDatabaseDdlRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseDdlRequest.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::Google.Cloud.Spanner.Admin.Database.V1.DropDatabaseRequest> __Marshaller_google_spanner_admin_database_v1_DropDatabaseRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::Google.Cloud.Spanner.Admin.Database.V1.DropDatabaseRequest.Parser));
@@ -155,6 +157,14 @@ namespace Google.Cloud.Spanner.Admin.Database.V1 {
         "GetDatabase",
         __Marshaller_google_spanner_admin_database_v1_GetDatabaseRequest,
         __Marshaller_google_spanner_admin_database_v1_Database);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest, global::Google.LongRunning.Operation> __Method_UpdateDatabase = new grpc::Method<global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest, global::Google.LongRunning.Operation>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "UpdateDatabase",
+        __Marshaller_google_spanner_admin_database_v1_UpdateDatabaseRequest,
+        __Marshaller_google_longrunning_Operation);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseDdlRequest, global::Google.LongRunning.Operation> __Method_UpdateDatabaseDdl = new grpc::Method<global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseDdlRequest, global::Google.LongRunning.Operation>(
@@ -333,6 +343,12 @@ namespace Google.Cloud.Spanner.Admin.Database.V1 {
       /// <returns>The response to send back to the client (wrapped by a task).</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
       public virtual global::System.Threading.Tasks.Task<global::Google.Cloud.Spanner.Admin.Database.V1.Database> GetDatabase(global::Google.Cloud.Spanner.Admin.Database.V1.GetDatabaseRequest request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::System.Threading.Tasks.Task<global::Google.LongRunning.Operation> UpdateDatabase(global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -819,6 +835,26 @@ namespace Google.Cloud.Spanner.Admin.Database.V1 {
       public virtual grpc::AsyncUnaryCall<global::Google.Cloud.Spanner.Admin.Database.V1.Database> GetDatabaseAsync(global::Google.Cloud.Spanner.Admin.Database.V1.GetDatabaseRequest request, grpc::CallOptions options)
       {
         return CallInvoker.AsyncUnaryCall(__Method_GetDatabase, null, options, request);
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::Google.LongRunning.Operation UpdateDatabase(global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateDatabase(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::Google.LongRunning.Operation UpdateDatabase(global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_UpdateDatabase, null, options, request);
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::Google.LongRunning.Operation> UpdateDatabaseAsync(global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateDatabaseAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::Google.LongRunning.Operation> UpdateDatabaseAsync(global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_UpdateDatabase, null, options, request);
       }
       /// <summary>
       /// Updates the schema of a Cloud Spanner database by
@@ -1965,6 +2001,7 @@ namespace Google.Cloud.Spanner.Admin.Database.V1 {
           .AddMethod(__Method_ListDatabases, serviceImpl.ListDatabases)
           .AddMethod(__Method_CreateDatabase, serviceImpl.CreateDatabase)
           .AddMethod(__Method_GetDatabase, serviceImpl.GetDatabase)
+          .AddMethod(__Method_UpdateDatabase, serviceImpl.UpdateDatabase)
           .AddMethod(__Method_UpdateDatabaseDdl, serviceImpl.UpdateDatabaseDdl)
           .AddMethod(__Method_DropDatabase, serviceImpl.DropDatabase)
           .AddMethod(__Method_GetDatabaseDdl, serviceImpl.GetDatabaseDdl)
@@ -1993,6 +2030,7 @@ namespace Google.Cloud.Spanner.Admin.Database.V1 {
       serviceBinder.AddMethod(__Method_ListDatabases, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Cloud.Spanner.Admin.Database.V1.ListDatabasesRequest, global::Google.Cloud.Spanner.Admin.Database.V1.ListDatabasesResponse>(serviceImpl.ListDatabases));
       serviceBinder.AddMethod(__Method_CreateDatabase, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Cloud.Spanner.Admin.Database.V1.CreateDatabaseRequest, global::Google.LongRunning.Operation>(serviceImpl.CreateDatabase));
       serviceBinder.AddMethod(__Method_GetDatabase, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Cloud.Spanner.Admin.Database.V1.GetDatabaseRequest, global::Google.Cloud.Spanner.Admin.Database.V1.Database>(serviceImpl.GetDatabase));
+      serviceBinder.AddMethod(__Method_UpdateDatabase, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseRequest, global::Google.LongRunning.Operation>(serviceImpl.UpdateDatabase));
       serviceBinder.AddMethod(__Method_UpdateDatabaseDdl, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Cloud.Spanner.Admin.Database.V1.UpdateDatabaseDdlRequest, global::Google.LongRunning.Operation>(serviceImpl.UpdateDatabaseDdl));
       serviceBinder.AddMethod(__Method_DropDatabase, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Cloud.Spanner.Admin.Database.V1.DropDatabaseRequest, global::Google.Protobuf.WellKnownTypes.Empty>(serviceImpl.DropDatabase));
       serviceBinder.AddMethod(__Method_GetDatabaseDdl, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Cloud.Spanner.Admin.Database.V1.GetDatabaseDdlRequest, global::Google.Cloud.Spanner.Admin.Database.V1.GetDatabaseDdlResponse>(serviceImpl.GetDatabaseDdl));
