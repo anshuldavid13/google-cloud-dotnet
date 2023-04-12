@@ -1,4 +1,4 @@
-﻿// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google Inc. All Rights Reserved.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -96,6 +96,7 @@ namespace Google.Cloud.Storage.V1
             GaxPreconditions.CheckNotNull(notification, nameof(notification));
             var request = Service.Notifications.Insert(notification, bucket);
             options?.ModifyRequest(request);
+            RetryHandler.MarkAsRetriable(request, RetryOptions.Never);
             return request;
         }
 
