@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Google LLC
+// Copyright 2019 Google LLC
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -107,10 +107,8 @@ namespace Google.Cloud.Storage.V1
             GaxPreconditions.CheckArgument(key.AccessId != null, nameof(key), "Key must contain an access ID");
             var request = Service.Projects.HmacKeys.Update(key, key.ProjectId, key.AccessId);
             options?.ModifyRequest(request);
-            if (key.ETag != null)
-            {
-                RetryHandler.MarkAsRetriable(request);
-            }
+            RetryOptions retryOptions = options?.RetryOptions ?? RetryOptions.MaybeIdempotent(key.ETag);
+            RetryHandler.MarkAsRetriable(request, retryOptions);
             return request;
         }
 
