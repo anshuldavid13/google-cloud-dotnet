@@ -87,6 +87,7 @@ namespace Google.Cloud.Storage.V1
             GaxPreconditions.CheckNotNull(serviceAccountEmail, nameof(serviceAccountEmail));
             var request = Service.Projects.HmacKeys.Create(projectId, serviceAccountEmail);
             options?.ModifyRequest(request);
+            RetryHandler.MarkAsRetriable(request, RetryOptions.Never);
             return request;
         }
 
@@ -98,7 +99,7 @@ namespace Google.Cloud.Storage.V1
             options?.ModifyRequest(request);
             RetryHandler.MarkAsRetriable(request);
             return request;
-        }
+        }   
 
         private HmacKeysResource.UpdateRequest CreateUpdateHmacKeyRequest(HmacKeyMetadata key, UpdateHmacKeyOptions options)
         {
