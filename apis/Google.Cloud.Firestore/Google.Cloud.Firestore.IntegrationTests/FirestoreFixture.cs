@@ -1,4 +1,4 @@
-﻿// Copyright 2017, Google Inc. All rights reserved.
+// Copyright 2017, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
             // Currently, only the default database is supported... so we create all our collections with a randomly-generated prefix.
             // When multiple databases are supported, we'll create a new one per test run.
             CollectionPrefix = IdGenerator.FromGuid(prefix: "test-");
-            FirestoreDb = new FirestoreDbBuilder { ProjectId = ProjectId, EmulatorDetection = EmulatorDetection.EmulatorOrProduction }.Build();
+            FirestoreDb = new FirestoreDbBuilder { ProjectId = ProjectId, EmulatorDetection = EmulatorDetection.EmulatorOnly }.Build();
             NonQueryCollection = FirestoreDb.Collection(CollectionPrefix + "-non-query");
             HighScoreCollection = FirestoreDb.Collection(CollectionPrefix + "-high-scores");
             ArrayQueryCollection = FirestoreDb.Collection(CollectionPrefix + "-array-query");

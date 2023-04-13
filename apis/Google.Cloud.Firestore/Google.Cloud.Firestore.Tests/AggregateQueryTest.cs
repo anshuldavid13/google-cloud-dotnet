@@ -40,7 +40,7 @@ public class AggregateQueryTest
     }
 
     [Fact]
-    public void Test1ToStructuredAggregationQuery()
+    public void TestToStructuredSumAggregationQuery()
     {
         var expectedStructuredAggregationQuery = new StructuredAggregationQuery
         {
@@ -51,7 +51,7 @@ public class AggregateQueryTest
     }
 
     [Fact]
-    public void Test2ToStructuredAggregationQuery()
+    public void TestToStructuredAvgAggregationQuery()
     {
         var expectedStructuredAggregationQuery = new StructuredAggregationQuery
         {
@@ -89,11 +89,11 @@ public class AggregateQueryTest
     }
 
     [Fact]
-    public async Task Get1SnapshotAsync_VerifySnapshotMembers()
+    public async Task GetSumSnapshotAsync_VerifySnapshotMembers()
     {
         Mock<FirestoreClient> mock = new() { CallBase = true };
         var db = FirestoreDb.Create("proj", "db", mock.Object);
-        var query = db.Collection("col").Select("Name");
+        var query = db.Collection("HighScoreCollection").Select("Score");
         var sampleReadTime = CreateProtoTimestamp(1, 3);
         var request = new RunAggregationQueryRequest
         {
@@ -101,7 +101,7 @@ public class AggregateQueryTest
             StructuredAggregationQuery = new StructuredAggregationQuery
             {
                 StructuredQuery = query.ToStructuredQuery(),
-                Aggregations = { new Aggregation { Alias = "Sum_col", Sum = new Sum() { Field = FieldPath.FromDotSeparatedString("col").ToFieldReference() } } }
+                Aggregations = { new Aggregation { Alias = "Sum_Score", Sum = new Sum() { Field = FieldPath.FromDotSeparatedString("Score").ToFieldReference() } } }
             }
         };
         var response = new FakeAggregationQueryStream(new[]
@@ -109,7 +109,7 @@ public class AggregateQueryTest
             new RunAggregationQueryResponse { ReadTime = sampleReadTime, Result = new AggregationResult() }
         });
         mock.Setup(c => c.RunAggregationQuery(request, It.IsAny<CallSettings>())).Returns(response);
-        var aggregateQuery = query.Count();
+        var aggregateQuery = query.Sum("Score");
         var snapshot = await aggregateQuery.GetSnapshotAsync();
         Assert.Equal(aggregateQuery, snapshot.Query);
         Assert.Equal(Timestamp.FromProto(sampleReadTime), snapshot.ReadTime);
