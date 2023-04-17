@@ -19,6 +19,7 @@ using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types.Aggregation.Types;
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types.Aggregation.OperatorOneofCase;
 using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
+using System;
 
 namespace Google.Cloud.Firestore;
 
@@ -43,6 +44,7 @@ internal static class Aggregates
     }
 
     // TODO: CHECK FOR NULL FIELDS NAMES IN INPUT AND IN ALIAS
+    // TODO: CHECK FOR upper case FIELDS NAMES IN INPUT AND IN ALIAS
 
     internal static Aggregation CreateSumAggregate(string field)
     {
