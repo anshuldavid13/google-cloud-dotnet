@@ -14,6 +14,8 @@
 
 using Google.Cloud.ClientTesting;
 using Google.Cloud.Firestore.IntegrationTests.Models;
+using Google.Cloud.Firestore.V1;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -471,8 +473,13 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task Sum()
         {
             CollectionReference collection = _fixture.HighScoreCollection;
-            var snapshot = await collection.Sum("Score").GetSnapshotAsync();
-            Assert.Equal(HighScore.Data.Sum(c => c.Score), snapshot.Data["Sum_Score"].DoubleValue);
+            var snapshot = await collection.Sum("Score").
+                WithAggregation(Aggregates.CreateSumAggregate("Level")).
+                WithAggregation(Aggregates.CreateAvgAggregate("Score")).
+                GetSnapshotAsync();
+            Assert.Equal(HighScore.Data.Sum(c => c.Score), snapshot.Data["Sum_Score"].IntegerValue);
+            Assert.Equal(HighScore.Data.Average(c => c.Score), snapshot.Data["Avg_Score"].DoubleValue);
+            Assert.Equal(HighScore.Data.Sum(c => c.Level), snapshot.Data["Sum_Level"].IntegerValue);
         }
 
         public static TheoryData<string, object, string[]> ArrayContainsTheoryData = new TheoryData<string, object, string[]>

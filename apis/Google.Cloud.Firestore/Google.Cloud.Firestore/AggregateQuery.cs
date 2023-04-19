@@ -77,20 +77,22 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
 
         void ProcessResponse(RunAggregationQueryResponse response)
         {
-            if (count is null && response.Result.AggregateFields?.TryGetValue(Aggregates.CountAlias, out var countValue) == true)
+            var aggregateFields = response.Result.AggregateFields;
+            if (count is null && aggregateFields?.TryGetValue(Aggregates.CountAlias, out var countValue) == true)
             {
                 GaxPreconditions.CheckState(countValue.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue, "The count was not an integer.");
                 count = countValue.IntegerValue;
             }
-            else if (response.Result.AggregateFields?.TryGetValue(Aggregates.SumAlias, out var sumValue) == true)
+            if (aggregateFields != null)
             {
-                GaxPreconditions.CheckState(sumValue.ValueTypeCase == Value.ValueTypeOneofCase.DoubleValue, "The sum was not a double.");
-                data.Add(Aggregates.SumAlias, sumValue);
-            }
-            else if (response.Result.AggregateFields?.TryGetValue(Aggregates.AvgAlias, out var avgValue) == true)
-            {
-                GaxPreconditions.CheckState(avgValue.ValueTypeCase == Value.ValueTypeOneofCase.DoubleValue, "The avg was not an double.");
-                data.Add(Aggregates.AvgAlias, avgValue);
+                foreach (var mapField in aggregateFields)
+                {
+                    var doubleCheck = mapField.Value.ValueTypeCase == Value.ValueTypeOneofCase.DoubleValue;
+                    var integerCheck = mapField.Value.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue;
+                    GaxPreconditions.CheckState(doubleCheck || integerCheck, "The aggregation value was neither a double or an integer.");
+
+                    data.Add(mapField.Key, mapField.Value);
+                }
             }
             readTime ??= Timestamp.FromProtoOrNull(response.ReadTime);
         }
