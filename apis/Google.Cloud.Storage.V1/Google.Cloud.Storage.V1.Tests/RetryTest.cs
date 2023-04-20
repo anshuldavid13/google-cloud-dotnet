@@ -14,7 +14,6 @@
 
 using Google.Api.Gax.Testing;
 using Google.Apis.Requests;
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.ClientTesting;
 using System;
 using System.Linq;
@@ -29,11 +28,10 @@ namespace Google.Cloud.Storage.V1.Tests;
 public class RetryTest
 {
     [Theory]
-    [InlineData(502, true, 502, 504)]
-    [InlineData(504, true, 502, 504)]
-    [InlineData(429, false, 502, 504)]
-    [InlineData(502, false)]
-    public void CustomRetryPredicateTest(int statusCode, bool success, params int[] errorCodes)
+    [InlineData(new[] { 502, 200 }, true, 502, 504)] // It retries for 502 error code as it is present in retry predicate and then succeeds with 200 code.
+    [InlineData(new[] { 502, 429 }, false, 502, 504)] // It fails because the second status code is not present in the retry predicate.
+    [InlineData(new[] { 502 }, false)] // It fails because the retry predicate doesnt have any retriable error code.
+    public void CustomRetryPredicateTest(int[] responseStatusCodes, bool success, params int[] errorCodes)
     {
         RetryOptions retryOptions = new RetryOptions(
             retryTiming: new RetryTiming(initialBackoff: TimeSpan.FromSeconds(1),
@@ -42,18 +40,15 @@ public class RetryTest
 
         AssertAttempts(
             retryOptions: retryOptions,
-            statusCode: statusCode,
-            numOfFailures: 2,
-            maximumRetries: 3,
+            responseStatusCodes: responseStatusCodes,
             success: success,
-            expectedBackOffs: new int[] { 0, 1, 3 });
+            expectedBackOffs: new int[] { 0, 1 });
     }
 
     [Theory]
-    [InlineData(0, 1, 2, 0, 0)]
-    [InlineData(1, 2, 2, 2, 0, 1, 3)]
-    [InlineData(1, 4, 1, 3, 0, 1, 2, 3)]
-    public void CustomRetryTimingTest(int initialBackoff, int maxBackoff, double backoffMultiplier, int numOfFailures, params int[] expectedBackOffs)
+    [InlineData(0, 1, 2, new[] { 200 }, new[] { 0 })] // It succeeds in first attempt with 0 backoff.
+    [InlineData(1, 2, 2, new[] { 502, 504, 200 }, new[] { 0, 1, 3 })] // It retries twice for 502, 504 error code and then succeeds with 200 code
+    public void CustomRetryTimingTest(int initialBackoff, int maxBackoff, double backoffMultiplier, int[] responseStatusCodes, int[] expectedBackOffs)
     {
         RetryOptions retryOptions = new RetryOptions(
             retryTiming: new RetryTiming(initialBackoff: TimeSpan.FromSeconds(initialBackoff),
@@ -62,13 +57,14 @@ public class RetryTest
 
         AssertAttempts(
             retryOptions: retryOptions,
-            statusCode: 502,
-            numOfFailures: numOfFailures,
-            maximumRetries: numOfFailures + 1,
+            responseStatusCodes: responseStatusCodes,
             success: true,
             expectedBackOffs: expectedBackOffs);
     }
 
+    /// <summary>
+    /// Exception is thrown in this test case as the it exceeds number of retry attempts
+    /// </summary>
     [Fact]
     public void ExceptionAfterRetryExhaustedTest()
     {
@@ -81,49 +77,40 @@ public class RetryTest
 
         AssertAttempts(
            retryOptions: retryOptions,
-           statusCode: 502,
-           numOfFailures: 4,
-           maximumRetries: 3,
+           responseStatusCodes: new[] { 502, 502, 502 },
            success: false,
            expectedBackOffs: expectedBackOffs);
     }
 
-    private static void AssertAttempts(RetryOptions retryOptions, int statusCode, int numOfFailures, int maximumRetries, bool success, params int[] expectedBackOffs)
+    private static void AssertAttempts(RetryOptions retryOptions, int[] responseStatusCodes, bool success, params int[] expectedBackOffs)
     {
         var scheduler = new FakeScheduler();
         var clock = scheduler.Clock;
         var messageHandler = new ReplayingMessageHandler(VersionHeaderBuilder.HeaderName, clock);
         var service = new FakeStorageService(messageHandler);
-        service.HttpClient.MessageHandler.GoogleApiClientHeader = "test/fake";
-        service.HttpClient.MessageHandler.NumTries = maximumRetries;
+        service.HttpClient.MessageHandler.NumTries = expectedBackOffs.Length;
 
         var request = service.Buckets.Get("bucket");
         var client = new StorageClientImpl(service, encryptionKey: null, scheduler);
         scheduler.Run(() =>
         {
-            // Retries for the the failures. Assumed that error code 504 is always included in the predicate for these tests.
-            service.ExpectRequests(request, (HttpStatusCode) 504, numOfFailures - 1);
-            if (numOfFailures > 0)
+            for (int i = 0; i < responseStatusCodes.Length; ++i)
             {
-                service.ExpectRequest(request, (HttpStatusCode) statusCode);
+                service.ExpectRequest(request, (HttpStatusCode) responseStatusCodes[i]);
             }
 
             DateTime startTime = clock.GetCurrentDateTimeUtc();
             if (success)
             {
-                // Last call is a success.
-                service.ExpectRequest(request, new Bucket());
-
                 client.GetBucket("bucket", new GetBucketOptions { RetryOptions = retryOptions });
-
                 Assert.Equal(expectedBackOffs.Count(), messageHandler.AttemptTimestamps.Count());
-                service.Verify();
             }
             else
             {
-                // The call throws an exception
                 Assert.Throws<GoogleApiException>(() => client.GetBucket("bucket", new GetBucketOptions { RetryOptions = retryOptions }));
             }
+
+            service.Verify();
 
             for (int i = 0; i < messageHandler.AttemptTimestamps.Count; i++)
             {
