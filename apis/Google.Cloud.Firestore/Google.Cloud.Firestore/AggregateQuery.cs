@@ -89,7 +89,12 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
                 {
                     var doubleCheck = mapField.Value.ValueTypeCase == Value.ValueTypeOneofCase.DoubleValue;
                     var integerCheck = mapField.Value.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue;
-                    GaxPreconditions.CheckState(doubleCheck || integerCheck, "The aggregation value was neither a double or an integer.");
+                    var sumCheck = mapField.Key.StartsWith("Sum");
+                    var avgCheck = mapField.Key.StartsWith("Avg");
+
+                    GaxPreconditions.CheckState(doubleCheck || integerCheck, "The aggregation result was neither a double or an integer.");
+                    //GaxPreconditions.CheckState(sumCheck && (doubleCheck || integerCheck), "The sum result was neither a double or an integer.");
+                    //GaxPreconditions.CheckState(avgCheck && doubleCheck, "The average result was not a double");
 
                     data.Add(mapField.Key, mapField.Value);
                 }

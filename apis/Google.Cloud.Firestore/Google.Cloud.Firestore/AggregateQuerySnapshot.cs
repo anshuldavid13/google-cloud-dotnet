@@ -14,6 +14,7 @@
 
 using Google.Api.Gax;
 using Google.Cloud.Firestore.V1;
+using Google.Protobuf.Collections;
 using Google.Type;
 using System;
 using System.Collections.Generic;
@@ -43,17 +44,15 @@ public sealed class AggregateQuerySnapshot : IEquatable<AggregateQuerySnapshot>
     public long? Count { get; }
 
     /// <summary>
-    /// 
+    /// TO DO: Check if it should be public
     /// </summary>
-    public Dictionary<string, Value> Data { get; }
+    private Dictionary<string, Value> Data { get; }
 
     internal AggregateQuerySnapshot(AggregateQuery query, Timestamp readTime, long? count, Dictionary<string, Value> data)
     {
         Query = query;
         ReadTime = readTime;
         Count = count;
-        //TODO USE DIRECT GETTER
-        //Count = getCount();
         Data = data;
     }
 
@@ -80,20 +79,31 @@ public sealed class AggregateQuerySnapshot : IEquatable<AggregateQuerySnapshot>
         return (long) value;
     }
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name="alias"></param>
-/// <returns></returns>
-/// <exception cref="ArgumentException"></exception>
-    public object getData(string alias)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="alias"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public Value getData(string alias)
     {
+
         if (!Data.ContainsKey(alias))
         {
             // TODO Detail
             throw new ArgumentException();
         }
-        Value value = Data[alias];// (aggregateField.Alias);//.get(aggregateField.getAlias());
+
+        Value value = Data[alias];
+
+        /*
+        if (value.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue)
+            return value.IntegerValue;
+        else if (value.ValueTypeCase == Value.ValueTypeOneofCase.DoubleValue)
+            return value.DoubleValue;
+        */
+        //check for null return value?
+
         return value;
     }
         /*

@@ -473,13 +473,13 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task Sum()
         {
             CollectionReference collection = _fixture.HighScoreCollection;
-            var snapshot = await collection.Sum("Score").
+            var snapshot = await collection.Sum(new FieldPath("Score")).
                 WithAggregation(Aggregates.CreateSumAggregate("Level")).
                 WithAggregation(Aggregates.CreateAvgAggregate("Score")).
                 GetSnapshotAsync();
-            Assert.Equal(HighScore.Data.Sum(c => c.Score), snapshot.Data["Sum_Score"].IntegerValue);
-            Assert.Equal(HighScore.Data.Average(c => c.Score), snapshot.Data["Avg_Score"].DoubleValue);
-            Assert.Equal(HighScore.Data.Sum(c => c.Level), snapshot.Data["Sum_Level"].IntegerValue);
+            Assert.Equal(HighScore.Data.Sum(c => c.Score), snapshot.getData("Sum_Score").IntegerValue);
+            Assert.Equal(HighScore.Data.Average(c => c.Score), snapshot.getData("Avg_Score").DoubleValue);
+            Assert.Equal(HighScore.Data.Sum(c => c.Level), snapshot.getData("Sum_Level").IntegerValue);
         }
 
         public static TheoryData<string, object, string[]> ArrayContainsTheoryData = new TheoryData<string, object, string[]>

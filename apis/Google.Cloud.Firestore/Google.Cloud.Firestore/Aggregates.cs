@@ -20,6 +20,8 @@ using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types.Aggregat
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types.Aggregation.OperatorOneofCase;
 using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
 using System;
+using Google.Api.Gax;
+using Google.Cloud.Firestore.Converters;
 
 namespace Google.Cloud.Firestore;
 
@@ -43,26 +45,27 @@ internal static class Aggregates
         return new Aggregation { Count = new Count(), Alias = CountAlias };
     }
 
-    // TODO: CHECK FOR NULL FIELDS NAMES IN INPUT AND IN ALIAS
-    // TODO: CHECK FOR upper case FIELDS NAMES IN INPUT AND IN ALIAS
-
     internal static Aggregation CreateSumAggregate(string field)
     {
+        GaxPreconditions.CheckNotNullOrEmpty(field, nameof(field));
         return new Aggregation { Sum = new Sum() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = SumAlias + "_" + field };
     }
 
     internal static Aggregation CreateSumAggregate(FieldPath fieldPath)
     {
+        GaxPreconditions.CheckNotNull(fieldPath, nameof(fieldPath));
         return new Aggregation { Sum = new Sum() { Field = fieldPath.ToFieldReference() }, Alias = SumAlias + "_" + fieldPath.EncodedPath };
     }
 
     internal static Aggregation CreateAvgAggregate(string field)
     {
+        GaxPreconditions.CheckNotNullOrEmpty(field, nameof(field));
         return new Aggregation { Avg = new Avg() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = AvgAlias + "_" + field };
     }
 
     internal static Aggregation CreateAvgAggregate(FieldPath fieldPath)
     {
+        GaxPreconditions.CheckNotNull(fieldPath, nameof(fieldPath));
         return new Aggregation { Avg = new Avg() { Field = fieldPath.ToFieldReference() }, Alias = AvgAlias + "_" + fieldPath.EncodedPath };
     }
 }
