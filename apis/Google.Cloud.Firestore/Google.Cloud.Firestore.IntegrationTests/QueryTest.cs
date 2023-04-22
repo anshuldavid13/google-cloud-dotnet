@@ -482,6 +482,17 @@ namespace Google.Cloud.Firestore.IntegrationTests
             Assert.Equal(HighScore.Data.Sum(c => c.Level), snapshot.getData("Sum_Level").IntegerValue);
         }
 
+        [Fact]
+        public async Task Sum_WithLimit()
+        {
+            CollectionReference collection = _fixture.HighScoreCollection;
+            var snapshot = await collection.Limit(2).Sum("Score").
+                WithAggregation(Aggregates.CreateAvgAggregate("Level")).
+                GetSnapshotAsync();
+            Assert.Equal(200, snapshot.getData("Sum_Score").IntegerValue);
+            Assert.Equal(12.5, snapshot.getData("Avg_Level").DoubleValue);
+        }
+
         public static TheoryData<string, object, string[]> ArrayContainsTheoryData = new TheoryData<string, object, string[]>
         {
             { "StringArray", "x", new[] { "string-x,y", "mixed" } },
