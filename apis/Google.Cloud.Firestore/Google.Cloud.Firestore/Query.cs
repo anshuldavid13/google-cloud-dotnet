@@ -16,13 +16,16 @@ using Google.Api.Gax;
 using Google.Api.Gax.Grpc;
 using Google.Cloud.Firestore.V1;
 using Google.Protobuf;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
+using static Google.Cloud.Firestore.Aggregates;
 
 namespace Google.Cloud.Firestore
 {
@@ -422,41 +425,27 @@ namespace Google.Cloud.Firestore
         /// </summary>
         /// <returns>An instance of <see cref="AggregateQuery"/> with count(*) aggregation applied.</returns>
         public AggregateQuery Count() =>
-            new AggregateQuery(this).WithAggregation(Aggregates.CreateCountAggregate());
-
-        ///TODO ADD FIELD PATH METHODS AS WELL
+            new AggregateQuery(this).WithAggregation(Aggregates.Count());
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="field"></param>
+        /// <param name="aggregation"></param>
+        /// <param name="aggregations"></param>
         /// <returns></returns>
-        public AggregateQuery Sum(string field) =>
-            new AggregateQuery(this).WithAggregation(Aggregates.CreateSumAggregate(field));
+        public AggregateQuery Aggregate(Aggregation aggregation, params Aggregation[] aggregations)
+        {
+            HashSet<Aggregation> result = new HashSet<Aggregation>
+            {
+                aggregation
+            };
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="fieldPath"></param>
-        /// <returns></returns>
-        public AggregateQuery Sum(FieldPath fieldPath) =>
-            new AggregateQuery(this).WithAggregation(Aggregates.CreateSumAggregate(fieldPath));
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="field"></param>
-        /// <returns></returns>
-        public AggregateQuery Avg(string field) =>
-            new AggregateQuery(this).WithAggregation(Aggregates.CreateAvgAggregate(field));
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="fieldPath"></param>
-        /// <returns></returns>
-        public AggregateQuery Avg(FieldPath fieldPath) =>
-            new AggregateQuery(this).WithAggregation(Aggregates.CreateAvgAggregate(fieldPath));
+            foreach (Aggregation agg in aggregations)
+            {
+                result.Add(agg);
+            }
+            return new AggregateQuery(this, result.ToList<Aggregation>());
+        }
 
         /// <summary>
         /// Add the given filter to this query.

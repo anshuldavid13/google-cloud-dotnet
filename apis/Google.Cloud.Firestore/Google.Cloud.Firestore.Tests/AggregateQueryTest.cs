@@ -47,7 +47,7 @@ public class AggregateQueryTest
             StructuredQuery = s_query.ToStructuredQuery(),
             Aggregations = { new Aggregation { Alias = "Sum_foo", Sum = new Sum() { Field = FieldPath.FromDotSeparatedString("foo").ToFieldReference() } } }
         };
-        Assert.Equal(expectedStructuredAggregationQuery, s_query.Sum("foo").ToStructuredAggregationQuery());
+        Assert.Equal(expectedStructuredAggregationQuery, s_query.Aggregate(Aggregates.Sum("foo")).ToStructuredAggregationQuery());
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class AggregateQueryTest
             StructuredQuery = s_query.ToStructuredQuery(),
             Aggregations = { new Aggregation { Alias = "Avg_foo", Avg = new Avg() { Field = FieldPath.FromDotSeparatedString("foo").ToFieldReference() } } }
         };
-        Assert.Equal(expectedStructuredAggregationQuery, s_query.Avg("foo").ToStructuredAggregationQuery());
+        Assert.Equal(expectedStructuredAggregationQuery, s_query.Aggregate(Aggregates.Avg("foo")).ToStructuredAggregationQuery());
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class AggregateQueryTest
             new RunAggregationQueryResponse { ReadTime = sampleReadTime, Result = new AggregationResult() }
         });
         mock.Setup(c => c.RunAggregationQuery(request, It.IsAny<CallSettings>())).Returns(response);
-        var aggregateQuery = query.Sum("Score");
+        var aggregateQuery = query.Aggregate(Aggregates.Sum("Score"));
         var snapshot = await aggregateQuery.GetSnapshotAsync();
         Assert.Equal(aggregateQuery, snapshot.Query);
         Assert.Equal(Timestamp.FromProto(sampleReadTime), snapshot.ReadTime);
@@ -122,7 +122,7 @@ public class AggregateQueryTest
         EqualityTester.AssertEqual(control,
             equal: new[]
             {
-                new AggregateQuery(s_db.Collection("col")).WithAggregation(Aggregates.CreateCountAggregate()),
+                new AggregateQuery(s_db.Collection("col")).WithAggregation(Aggregates.Count()),
                 // Aggregate query returned by count.
                 s_db.Collection("col").Count()
             },
