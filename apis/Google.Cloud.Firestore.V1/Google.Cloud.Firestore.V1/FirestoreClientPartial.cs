@@ -108,9 +108,6 @@ namespace Google.Cloud.Firestore.V1
         partial void Modify_UpdateDocumentRequest(ref UpdateDocumentRequest request, ref CallSettings settings) =>
             ApplyResourcePrefixHeader(ref settings, request.Document?.Name);
 
-        partial void Modify_RunAggregationQueryRequest(ref RunAggregationQueryRequest request, ref CallSettings settings) =>
-            ApplyResourcePrefixHeader(ref settings, request.Parent);
-
         private static void ApplyResourcePrefixHeader(ref CallSettings settings, string resource)
         {
             // If we haven't been given a resource name, just let the request as it is.

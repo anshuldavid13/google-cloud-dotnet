@@ -178,24 +178,22 @@ namespace Google.Cloud.Firestore.V1
             return new StructuredQuery(this);
         }
 
-    /// <summary>Field number for the "select" field.</summary>
-    public const int SelectFieldNumber = 1;
-    private global::Google.Cloud.Firestore.V1.StructuredQuery.Types.Projection select_;
-    /// <summary>
-    /// Optional sub-set of the fields to return.
-    ///
-    /// This acts as a [DocumentMask][google.firestore.v1.DocumentMask] over the
-    /// documents returned from a query. When not set, assumes that the caller
-    /// wants all fields returned.
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Google.Cloud.Firestore.V1.StructuredQuery.Types.Projection Select {
-      get { return select_; }
-      set {
-        select_ = value;
-      }
-    }
+        /// <summary>Field number for the "select" field.</summary>
+        public const int SelectFieldNumber = 1;
+        private global::Google.Cloud.Firestore.V1.StructuredQuery.Types.Projection select_;
+        /// <summary>
+        /// The projection to return.
+        /// </summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public global::Google.Cloud.Firestore.V1.StructuredQuery.Types.Projection Select
+        {
+            get { return select_; }
+            set
+            {
+                select_ = value;
+            }
+        }
 
         /// <summary>Field number for the "from" field.</summary>
         public const int FromFieldNumber = 2;
@@ -2079,102 +2077,101 @@ namespace Google.Cloud.Firestore.V1
                 }
 #endif
 
-        #region Nested types
-        /// <summary>Container for nested types declared in the FieldFilter message type.</summary>
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public static partial class Types {
-          /// <summary>
-          /// A field filter operator.
-          /// </summary>
-          public enum Operator {
-            /// <summary>
-            /// Unspecified. This value must not be used.
-            /// </summary>
-            [pbr::OriginalName("OPERATOR_UNSPECIFIED")] Unspecified = 0,
-            /// <summary>
-            /// The given `field` is less than the given `value`.
-            ///
-            /// Requires:
-            ///
-            /// * That `field` come first in `order_by`.
-            /// </summary>
-            [pbr::OriginalName("LESS_THAN")] LessThan = 1,
-            /// <summary>
-            /// The given `field` is less than or equal to the given `value`.
-            ///
-            /// Requires:
-            ///
-            /// * That `field` come first in `order_by`.
-            /// </summary>
-            [pbr::OriginalName("LESS_THAN_OR_EQUAL")] LessThanOrEqual = 2,
-            /// <summary>
-            /// The given `field` is greater than the given `value`.
-            ///
-            /// Requires:
-            ///
-            /// * That `field` come first in `order_by`.
-            /// </summary>
-            [pbr::OriginalName("GREATER_THAN")] GreaterThan = 3,
-            /// <summary>
-            /// The given `field` is greater than or equal to the given `value`.
-            ///
-            /// Requires:
-            ///
-            /// * That `field` come first in `order_by`.
-            /// </summary>
-            [pbr::OriginalName("GREATER_THAN_OR_EQUAL")] GreaterThanOrEqual = 4,
-            /// <summary>
-            /// The given `field` is equal to the given `value`.
-            /// </summary>
-            [pbr::OriginalName("EQUAL")] Equal = 5,
-            /// <summary>
-            /// The given `field` is not equal to the given `value`.
-            ///
-            /// Requires:
-            ///
-            /// * No other `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`.
-            /// * That `field` comes first in the `order_by`.
-            /// </summary>
-            [pbr::OriginalName("NOT_EQUAL")] NotEqual = 6,
-            /// <summary>
-            /// The given `field` is an array that contains the given `value`.
-            /// </summary>
-            [pbr::OriginalName("ARRAY_CONTAINS")] ArrayContains = 7,
-            /// <summary>
-            /// The given `field` is equal to at least one value in the given array.
-            ///
-            /// Requires:
-            ///
-            /// * That `value` is a non-empty `ArrayValue`, subject to disjunction
-            ///   limits.
-            /// * No `NOT_IN` filters in the same query.
-            /// </summary>
-            [pbr::OriginalName("IN")] In = 8,
-            /// <summary>
-            /// The given `field` is an array that contains any of the values in the
-            /// given array.
-            ///
-            /// Requires:
-            ///
-            /// * That `value` is a non-empty `ArrayValue`, subject to disjunction
-            ///   limits.
-            /// * No other `ARRAY_CONTAINS_ANY` filters within the same disjunction.
-            /// * No `NOT_IN` filters in the same query.
-            /// </summary>
-            [pbr::OriginalName("ARRAY_CONTAINS_ANY")] ArrayContainsAny = 9,
-            /// <summary>
-            /// The value of the `field` is not in the given array.
-            ///
-            /// Requires:
-            ///
-            /// * That `value` is a non-empty `ArrayValue` with at most 10 values.
-            /// * No other `OR`, `IN`, `ARRAY_CONTAINS_ANY`, `NOT_IN`, `NOT_EQUAL`,
-            ///   `IS_NOT_NULL`, or `IS_NOT_NAN`.
-            /// * That `field` comes first in the `order_by`.
-            /// </summary>
-            [pbr::OriginalName("NOT_IN")] NotIn = 10,
-          }
+                #region Nested types
+                /// <summary>Container for nested types declared in the FieldFilter message type.</summary>
+                [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+                [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+                public static partial class Types
+                {
+                    /// <summary>
+                    /// A field filter operator.
+                    /// </summary>
+                    public enum Operator
+                    {
+                        /// <summary>
+                        /// Unspecified. This value must not be used.
+                        /// </summary>
+                        [pbr::OriginalName("OPERATOR_UNSPECIFIED")] Unspecified = 0,
+                        /// <summary>
+                        /// The given `field` is less than the given `value`.
+                        ///
+                        /// Requires:
+                        ///
+                        /// * That `field` come first in `order_by`.
+                        /// </summary>
+                        [pbr::OriginalName("LESS_THAN")] LessThan = 1,
+                        /// <summary>
+                        /// The given `field` is less than or equal to the given `value`.
+                        ///
+                        /// Requires:
+                        ///
+                        /// * That `field` come first in `order_by`.
+                        /// </summary>
+                        [pbr::OriginalName("LESS_THAN_OR_EQUAL")] LessThanOrEqual = 2,
+                        /// <summary>
+                        /// The given `field` is greater than the given `value`.
+                        ///
+                        /// Requires:
+                        ///
+                        /// * That `field` come first in `order_by`.
+                        /// </summary>
+                        [pbr::OriginalName("GREATER_THAN")] GreaterThan = 3,
+                        /// <summary>
+                        /// The given `field` is greater than or equal to the given `value`.
+                        ///
+                        /// Requires:
+                        ///
+                        /// * That `field` come first in `order_by`.
+                        /// </summary>
+                        [pbr::OriginalName("GREATER_THAN_OR_EQUAL")] GreaterThanOrEqual = 4,
+                        /// <summary>
+                        /// The given `field` is equal to the given `value`.
+                        /// </summary>
+                        [pbr::OriginalName("EQUAL")] Equal = 5,
+                        /// <summary>
+                        /// The given `field` is not equal to the given `value`.
+                        ///
+                        /// Requires:
+                        ///
+                        /// * No other `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`.
+                        /// * That `field` comes first in the `order_by`.
+                        /// </summary>
+                        [pbr::OriginalName("NOT_EQUAL")] NotEqual = 6,
+                        /// <summary>
+                        /// The given `field` is an array that contains the given `value`.
+                        /// </summary>
+                        [pbr::OriginalName("ARRAY_CONTAINS")] ArrayContains = 7,
+                        /// <summary>
+                        /// The given `field` is equal to at least one value in the given array.
+                        ///
+                        /// Requires:
+                        ///
+                        /// * That `value` is a non-empty `ArrayValue` with at most 10 values.
+                        /// * No other `IN` or `ARRAY_CONTAINS_ANY` or `NOT_IN`.
+                        /// </summary>
+                        [pbr::OriginalName("IN")] In = 8,
+                        /// <summary>
+                        /// The given `field` is an array that contains any of the values in the
+                        /// given array.
+                        ///
+                        /// Requires:
+                        ///
+                        /// * That `value` is a non-empty `ArrayValue` with at most 10 values.
+                        /// * No other `IN` or `ARRAY_CONTAINS_ANY` or `NOT_IN`.
+                        /// </summary>
+                        [pbr::OriginalName("ARRAY_CONTAINS_ANY")] ArrayContainsAny = 9,
+                        /// <summary>
+                        /// The value of the `field` is not in the given array.
+                        ///
+                        /// Requires:
+                        ///
+                        /// * That `value` is a non-empty `ArrayValue` with at most 10 values.
+                        /// * No other `IN`, `ARRAY_CONTAINS_ANY`, `NOT_IN`, `NOT_EQUAL`,
+                        ///   `IS_NOT_NULL`, or `IS_NOT_NAN`.
+                        /// * That `field` comes first in the `order_by`.
+                        /// </summary>
+                        [pbr::OriginalName("NOT_IN")] NotIn = 10,
+                    }
 
                 }
                 #endregion
@@ -4125,37 +4122,39 @@ namespace Google.Cloud.Firestore.V1
                             return new Count(this);
                         }
 
-            /// <summary>Field number for the "up_to" field.</summary>
-            public const int UpToFieldNumber = 1;
-            private static readonly pb::FieldCodec<long?> _single_upTo_codec = pb::FieldCodec.ForStructWrapper<long>(10);
-            private long? upTo_;
-            /// <summary>
-            /// Optional. Optional constraint on the maximum number of documents to
-            /// count.
-            ///
-            /// This provides a way to set an upper bound on the number of documents
-            /// to scan, limiting latency, and cost.
-            ///
-            /// Unspecified is interpreted as no bound.
-            ///
-            /// High-Level Example:
-            ///
-            /// ```
-            /// AGGREGATE COUNT_UP_TO(1000) OVER ( SELECT * FROM k );
-            /// ```
-            ///
-            /// Requires:
-            ///
-            /// * Must be greater than zero when present.
-            /// </summary>
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-            [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-            public long? UpTo {
-              get { return upTo_; }
-              set {
-                upTo_ = value;
-              }
-            }
+                        /// <summary>Field number for the "up_to" field.</summary>
+                        public const int UpToFieldNumber = 1;
+                        private static readonly pb::FieldCodec<long?> _single_upTo_codec = pb::FieldCodec.ForStructWrapper<long>(10);
+                        private long? upTo_;
+                        /// <summary>
+                        /// Optional. Optional constraint on the maximum number of documents to
+                        /// count.
+                        ///
+                        /// This provides a way to set an upper bound on the number of documents
+                        /// to scan, limiting latency and cost.
+                        ///
+                        /// Unspecified is interpreted as no bound.
+                        ///
+                        /// High-Level Example:
+                        ///
+                        /// ```
+                        /// AGGREGATE COUNT_UP_TO(1000) OVER ( SELECT * FROM k );
+                        /// ```
+                        ///
+                        /// Requires:
+                        ///
+                        /// * Must be greater than zero when present.
+                        /// </summary>
+                        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+                        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+                        public long? UpTo
+                        {
+                            get { return upTo_; }
+                            set
+                            {
+                                upTo_ = value;
+                            }
+                        }
 
 
                         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
