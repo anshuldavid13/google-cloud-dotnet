@@ -14,7 +14,7 @@
 
 using Google.Cloud.ClientTesting;
 using Google.Cloud.Firestore.IntegrationTests.Models;
-using Google.Cloud.Firestore.V1;
+using static Google.Cloud.Firestore.Aggregates;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -470,7 +470,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         }
 
         [Fact]
-        public async Task Sum()
+        public async Task SumTest()
         {
             CollectionReference collection = _fixture.StudentsCollection;
             var snapshot = await collection.Aggregate(Aggregates.Sum("Level")).GetSnapshotAsync();
@@ -502,7 +502,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         }
 
         [Fact]
-        public async Task Avg()
+        public async Task AvgTest()
         {
             CollectionReference collection = _fixture.StudentsCollection;
             var snapshot = await collection.Aggregate(Aggregates.Avg("Level")).GetSnapshotAsync();
@@ -585,7 +585,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task MultipleAggregations()
         {
             CollectionReference collection = _fixture.StudentsCollection;
-            var snapshot = await collection.Aggregate(Aggregates.Sum("MathScore"), Aggregates.Avg("MathScore"), Aggregates.Count()).GetSnapshotAsync();
+            var snapshot = await collection.Aggregate(Sum("MathScore"), Aggregates.Avg("MathScore"), Aggregates.Count()).GetSnapshotAsync();
             Assert.Equal(Students.Data.Average(c => c.MathScore), snapshot["Avg_MathScore"].DoubleValue);
             Assert.Equal(Students.Data.Count(), snapshot["Count"].IntegerValue);
         }

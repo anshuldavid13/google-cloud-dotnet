@@ -41,7 +41,11 @@ public static class Aggregates
 
     internal const string SumAliasPrefix = "Sum";
 
-    internal static Aggregation Count()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public static Aggregation Count()
     {
         return new Aggregation { Count = new Count(), Alias = CountAlias };
     }
