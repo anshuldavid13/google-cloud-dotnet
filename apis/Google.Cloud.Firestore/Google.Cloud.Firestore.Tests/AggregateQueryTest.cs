@@ -18,6 +18,7 @@ using Google.Cloud.Firestore.V1;
 using Moq;
 using System.Threading.Tasks;
 using Xunit;
+using static Google.Cloud.Firestore.Aggregates;
 using static Google.Cloud.Firestore.Tests.ProtoHelpers;
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types.Aggregation.Types;
@@ -47,7 +48,7 @@ public class AggregateQueryTest
             StructuredQuery = s_query.ToStructuredQuery(),
             Aggregations = { new Aggregation { Alias = "Sum_foo", Sum = new Sum() { Field = FieldPath.FromDotSeparatedString("foo").ToFieldReference() } } }
         };
-        Assert.Equal(expectedStructuredAggregationQuery, s_query.Aggregate(Aggregates.Sum("foo")).ToStructuredAggregationQuery());
+        Assert.Equal(expectedStructuredAggregationQuery, s_query.Aggregate(Sum("foo")).ToStructuredAggregationQuery());
     }
 
     [Fact]
@@ -58,7 +59,7 @@ public class AggregateQueryTest
             StructuredQuery = s_query.ToStructuredQuery(),
             Aggregations = { new Aggregation { Alias = "Avg_foo", Avg = new Avg() { Field = FieldPath.FromDotSeparatedString("foo").ToFieldReference() } } }
         };
-        Assert.Equal(expectedStructuredAggregationQuery, s_query.Aggregate(Aggregates.Avg("foo")).ToStructuredAggregationQuery());
+        Assert.Equal(expectedStructuredAggregationQuery, s_query.Aggregate(Avg("foo")).ToStructuredAggregationQuery());
     }
 
     [Fact]

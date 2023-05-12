@@ -87,11 +87,6 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
             {
                 foreach (var mapField in aggregateFields)
                 {
-                    var doubleCheck = mapField.Value.ValueTypeCase == Value.ValueTypeOneofCase.DoubleValue;
-                    var integerCheck = mapField.Value.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue;
-
-                    GaxPreconditions.CheckState(doubleCheck || integerCheck, "The aggregation result was neither a double or an integer.", mapField.Value);
-
                     data.Add(mapField.Key, mapField.Value);
                 }
             }
@@ -115,58 +110,15 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
         return response.GetResponseStream();
     }
 
-    /*
-StructuredAggregationQuery.Aggregation.Builder aggregation =
-    StructuredAggregationQuery.Aggregation.newBuilder();
-aggregation.setCount(StructuredAggregationQuery.Aggregation.Count.getDefaultInstance());
-aggregation.setAlias(ALIAS_COUNT);
-structuredAggregationQuery.addAggregations(aggregation);
-
-*/
-
     internal StructuredAggregationQuery ToStructuredAggregationQuery() => new StructuredAggregationQuery
     {
         StructuredQuery = _query.ToStructuredQuery(),
         Aggregations = { _aggregations }
     };
 
-
-    /*
-        // We use a Set here to automatically remove duplicates.
-    Set<StructuredAggregationQuery.Aggregation> aggregations = new HashSet<>();
-    for (AggregateField aggregateField : aggregateFieldList) {
-      // If there's a field for this aggregation, build its proto.
-      StructuredQuery.FieldReference field = null;
-      if (!aggregateField.getFieldPath().isEmpty()) {
-        field =
-            StructuredQuery.FieldReference.newBuilder()
-                .setFieldPath(aggregateField.getFieldPath())
-                .build();
-}
-// Build the aggregation proto.
-Aggregation.Builder aggregation = Aggregation.newBuilder();
-      if (aggregateField instanceof AggregateField.CountAggregateField)
-{
-    aggregation.setCount(Aggregation.Count.getDefaultInstance());
-} else if (aggregateField instanceof AggregateField.SumAggregateField)
-{
-    aggregation.setSum(Aggregation.Sum.newBuilder().setField(field).build());
-} else if (aggregateField instanceof AggregateField.AverageAggregateField)
-{
-    aggregation.setAvg(Aggregation.Avg.newBuilder().setField(field).build());
-} else {
-        throw new RuntimeException("Unsupported aggregation");
-      }
-      aggregation.setAlias(aggregateField.getAlias());
-aggregations.add(aggregation.build());
-    }
-    structuredAggregationQuery.addAllAggregations(aggregations);
-    */
-
-
-/// <inheritdoc />
-public override int GetHashCode() =>
-        GaxEqualityHelpers.CombineHashCodes(_query.GetHashCode(), GaxEqualityHelpers.GetListHashCode(_aggregations));
+    /// <inheritdoc />
+    public override int GetHashCode() =>
+            GaxEqualityHelpers.CombineHashCodes(_query.GetHashCode(), GaxEqualityHelpers.GetListHashCode(_aggregations));
 
     /// <summary> 
     /// Determines whether <paramref name="other"/> is equal to this instance.
