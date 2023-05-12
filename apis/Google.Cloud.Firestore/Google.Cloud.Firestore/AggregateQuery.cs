@@ -33,11 +33,6 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
     private readonly Query _query;
     private readonly IReadOnlyList<Aggregation> _aggregations;
 
-    /// <summary>
-    /// TODO
-    /// </summary>
-    //public Dictionary<string, Value> Data { get; }
-
     internal AggregateQuery(Query query)
     {
         _query = GaxPreconditions.CheckNotNull(query, nameof(query));

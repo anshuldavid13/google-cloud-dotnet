@@ -435,16 +435,13 @@ namespace Google.Cloud.Firestore
         /// <returns></returns>
         public AggregateQuery Aggregate(Aggregation aggregation, params Aggregation[] aggregations)
         {
-            HashSet<Aggregation> result = new HashSet<Aggregation>
-            {
-                aggregation
-            };
+            HashSet<Aggregation> result = new HashSet<Aggregation> { aggregation };
 
             foreach (Aggregation agg in aggregations)
             {
                 result.Add(agg);
             }
-            return new AggregateQuery(this, result.ToList<Aggregation>());
+            return new AggregateQuery(this, result.ToList());
         }
 
         /// <summary>
