@@ -47,8 +47,7 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
 
     internal AggregateQuery WithAggregation(Aggregation aggregation)
     {
-        var newAggregations = new List<Aggregation>(_aggregations);
-        newAggregations.Add(aggregation);
+        var newAggregations = new List<Aggregation>(_aggregations) { aggregation };
         return new AggregateQuery(_query, newAggregations);
     }
 
@@ -105,7 +104,7 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
         return response.GetResponseStream();
     }
 
-    internal StructuredAggregationQuery ToStructuredAggregationQuery() => new StructuredAggregationQuery
+    internal StructuredAggregationQuery ToStructuredAggregationQuery() => new()
     {
         StructuredQuery = _query.ToStructuredQuery(),
         Aggregations = { _aggregations }
@@ -113,7 +112,7 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
 
     /// <inheritdoc />
     public override int GetHashCode() =>
-            GaxEqualityHelpers.CombineHashCodes(_query.GetHashCode(), GaxEqualityHelpers.GetListHashCode(_aggregations));
+        GaxEqualityHelpers.CombineHashCodes(_query.GetHashCode(), GaxEqualityHelpers.GetListHashCode(_aggregations));
 
     /// <summary> 
     /// Determines whether <paramref name="other"/> is equal to this instance.
@@ -124,5 +123,4 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
 
     /// <inheritdoc/>
     public override bool Equals(object obj) => Equals(obj as AggregateQuery);
-
 }

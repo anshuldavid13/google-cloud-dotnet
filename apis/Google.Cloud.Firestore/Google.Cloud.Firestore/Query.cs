@@ -16,7 +16,6 @@ using Google.Api.Gax;
 using Google.Api.Gax.Grpc;
 using Google.Cloud.Firestore.V1;
 using Google.Protobuf;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,7 +24,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
-using static Google.Cloud.Firestore.Aggregates;
 
 namespace Google.Cloud.Firestore
 {
