@@ -26,7 +26,7 @@ using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 namespace Google.Cloud.Firestore;
 
 /// <summary>
-/// A query for running an aggregation over a [StructuredQuery][google.firestore.v1.StructuredQuery]. Currently only "count(*)" aggregation is supported.
+/// A query for running an aggregation over a [StructuredQuery][google.firestore.v1.StructuredQuery].
 /// </summary>
 public sealed class AggregateQuery : IEquatable<AggregateQuery>
 {

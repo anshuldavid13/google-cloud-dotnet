@@ -59,7 +59,7 @@ public class AggregateQueryTest
             StructuredQuery = s_query.ToStructuredQuery(),
             Aggregations = { new Aggregation { Alias = "Avg_foo", Avg = new Avg() { Field = FieldPath.FromDotSeparatedString("foo").ToFieldReference() } } }
         };
-        Assert.Equal(expectedStructuredAggregationQuery, s_query.Aggregate(Avg("foo")).ToStructuredAggregationQuery());
+        Assert.Equal(expectedStructuredAggregationQuery, s_query.Aggregate(Average("foo")).ToStructuredAggregationQuery());
     }
 
     [Fact]

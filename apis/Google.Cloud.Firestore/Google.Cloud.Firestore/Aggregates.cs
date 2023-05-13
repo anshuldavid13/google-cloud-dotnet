@@ -35,59 +35,118 @@ public static class Aggregates
     internal const string SumAliasPrefix = "Sum";
 
     /// <summary>
+    /// Calculates the count of the values of the requested field.
+    /// It uses the server side aggregation <see cref="Aggregation.Count"/> to get the count.
+    ///
+    /// The `COUNT(*)` aggregation function operates on the entire document so it does not require a field reference.
     /// 
     /// </summary>
-    /// <returns></returns>
-    public static Aggregation Count()
-    {
-        return new Aggregation { Count = new Count(), Alias = CountAlias };
-    }
+    /// <returns>Returns the count.</returns>
+    public static Aggregation Count() => new() { Count = new Count(), Alias = CountAlias };
 
     /// <summary>
     /// 
+    /// Calculates the sum of the values of the requested field.
+    /// It uses the server side aggregation <see cref="Aggregation.Sum"/> to get the sum value.
+    /// 
+    /// * Only numeric values will be aggregated. All non-numeric values including `NULL` are skipped.
+    /// * If the aggregated values contain `NaN`, returns `NaN`.
+    /// * If the aggregated value set is empty, returns 0.
+    /// * Returns a 64-bit integer if the sum result is an integer value and does
+    /// not overflow or underflow. Otherwise, the result is returned as a double.
+    /// 
     /// </summary>
-    /// <param name="field"></param>
-    /// <param name="alias"></param>
-    /// <returns></returns>
+    /// <param name="field">The mandatory field on which the Sum aggregation is performed.</param>
+    /// <param name="alias" cref="Aggregation.Alias">
+    ///
+    /// An optional parameter to store the alias.
+    /// If none is provided by user , one is generated based on the field names formatted as
+    /// "operatorName"_"fieldName". Example: Sum_marks
+    /// 
+    /// </param>
+    /// <returns>Returns the sum of the values of the requested field.</returns>
     public static Aggregation Sum(string field, string alias = null)
     {
         GaxPreconditions.CheckNotNullOrEmpty(field, nameof(field));
-        return new Aggregation { Sum = new Sum() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = alias == null ? SumAliasPrefix + "_" + field : alias };
+        return new Aggregation { Sum = new Sum() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = alias ?? SumAliasPrefix + "_" + field };
     }
 
     /// <summary>
     /// 
+    /// Calculates the sum of the values of the requested field.
+    /// It uses the server side aggregation <see cref="Aggregation.Sum"/> to get the sum value.
+    /// 
+    /// * Only numeric values will be aggregated. All non-numeric values including `NULL` are skipped.
+    /// * If the aggregated values contain `NaN`, returns `NaN`.
+    /// * If the aggregated value set is empty, returns 0.
+    /// * Returns a 64-bit integer if the sum result is an integer value and does
+    /// not overflow or underflow. Otherwise, the result is returned as a double.
+    /// 
     /// </summary>
-    /// <param name="fieldPath"></param>
-    /// <param name="alias"></param>
-    /// <returns></returns>
+    /// <param name="fieldPath">The fieldpath for the mandatory field on which the Sum aggregation is performed.</param>
+    /// <param name="alias" cref="Aggregation.Alias">
+    ///
+    /// An optional parameter to store the alias.
+    /// If none is provided by user , one is generated based on the field names formatted as
+    /// "operatorName"_"fieldName". Example: Sum_marks
+    /// 
+    /// </param>
+    /// <returns>Returns the sum of the values of the requested field.</returns>
     public static Aggregation Sum(FieldPath fieldPath, string alias = null)
     {
         GaxPreconditions.CheckNotNull(fieldPath, nameof(fieldPath));
-        return new Aggregation { Sum = new Sum() { Field = fieldPath.ToFieldReference() }, Alias = alias == null ? SumAliasPrefix + "_" + fieldPath.EncodedPath : alias };
+        return new Aggregation { Sum = new Sum() { Field = fieldPath.ToFieldReference() }, Alias = alias ?? SumAliasPrefix + "_" + fieldPath.EncodedPath };
     }
 
     /// <summary>
     /// 
+    /// Calculates the average of the values of the requested field.
+    /// It uses the server side aggregation <see cref="Aggregation.Avg"/> to get the average value.
+    ///
+    /// * Only numeric values will be aggregated. All non-numeric values including `NULL` are skipped.
+    /// * If the aggregated values contain `NaN`, returns `NaN`.
+    /// * If the aggregated value set is empty, returns `NULL`.
+    /// * Always returns the result as a double.
+    /// 
     /// </summary>
-    /// <param name="field"></param>
-    /// <param name="alias"></param>
-    /// <returns></returns>
-    public static Aggregation Avg(string field, string alias = null)
+    /// <param name="field">The mandatory field on which the Average aggregation is performed.</param>
+    /// <param name="alias" cref="Aggregation.Alias">
+    ///
+    /// An optional parameter to store the alias.
+    /// If none is provided by user , one is generated based on the field names formatted as
+    /// "operatorName"_"fieldName". Example: Avg_age
+    /// 
+    /// </param>
+    /// <returns>Returns the average of the values of the requested field.</returns>
+    public static Aggregation Average(string field, string alias = null)
     {
         GaxPreconditions.CheckNotNullOrEmpty(field, nameof(field));
-        return new Aggregation { Avg = new Avg() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = alias == null ? AvgAliasPrefix + "_" + field : alias };
+        return new Aggregation { Avg = new Avg() { Field = FieldPath.FromDotSeparatedString(field).ToFieldReference() }, Alias = alias ?? AvgAliasPrefix + "_" + field };
     }
 
     /// <summary>
     /// 
+    /// Calculates the average of the values of the requested field.
+    /// It uses the server side aggregation <see cref="Aggregation.Avg"/> to get the average value.
+    ///
+    /// * Only numeric values will be aggregated. All non-numeric values including `NULL` are skipped.
+    /// * If the aggregated values contain `NaN`, returns `NaN`.
+    /// * If the aggregated value set is empty, returns `NULL`.
+    /// * Always returns the result as a double.
+    /// 
     /// </summary>
-    /// <param name="fieldPath"></param>
-    /// <param name="alias"></param>
-    /// <returns></returns>
-    public static Aggregation Avg(FieldPath fieldPath, string alias = null)
+    /// <param name="fieldPath">The fieldpath for the mandatory field on which the Average aggregation is performed.</param>
+    /// <param name="alias" cref="Aggregation.Alias">
+    ///
+    /// An optional parameter to store the alias.
+    /// If none is provided by user , one is generated based on the field names formatted as
+    /// "operatorName"_"fieldName". Example: Avg_age
+    /// 
+    /// </param>
+    /// <returns>Returns the average of the values of the requested field.</returns>
+    public static Aggregation Average(FieldPath fieldPath, string alias = null)
     {
         GaxPreconditions.CheckNotNull(fieldPath, nameof(fieldPath));
-        return new Aggregation { Avg = new Avg() { Field = fieldPath.ToFieldReference() }, Alias = alias == null ? AvgAliasPrefix + "_" + fieldPath.EncodedPath : alias };
+        return new Aggregation { Avg = new Avg() { Field = fieldPath.ToFieldReference() }, Alias = alias ?? AvgAliasPrefix + "_" + fieldPath.EncodedPath };
     }
 }

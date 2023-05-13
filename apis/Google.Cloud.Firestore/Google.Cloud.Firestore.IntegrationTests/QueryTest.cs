@@ -504,7 +504,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task AvgTest()
         {
             CollectionReference collection = _fixture.StudentsCollection;
-            var snapshot = await collection.Aggregate(Avg("Level")).GetSnapshotAsync();
+            var snapshot = await collection.Aggregate(Average("Level")).GetSnapshotAsync();
             Assert.Equal(Students.Data.Average(c => c.Level), snapshot["Avg_Level"].DoubleValue);
         }
 
@@ -512,7 +512,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task AvgAwithAlias()
         {
             CollectionReference collection = _fixture.StudentsCollection;
-            var snapshot = await collection.Aggregate(Avg("Level", "myAvg")).GetSnapshotAsync();
+            var snapshot = await collection.Aggregate(Average("Level", "myAvg")).GetSnapshotAsync();
             Assert.Equal(Students.Data.Average(c => c.Level), snapshot["myAvg"].DoubleValue);
         }
 
@@ -520,7 +520,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task AvgWithFieldPath()
         {
             CollectionReference collection = _fixture.StudentsCollection;
-            var snapshot = await collection.Aggregate(Avg(new FieldPath("Level"))).GetSnapshotAsync();
+            var snapshot = await collection.Aggregate(Average(new FieldPath("Level"))).GetSnapshotAsync();
             Assert.Equal(Students.Data.Average(c => c.Level), snapshot["Avg_Level"].DoubleValue);
         }
 
@@ -528,7 +528,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task AvgWithNaNValue()
         {
             CollectionReference collection = _fixture.StudentsCollection;
-            var snapshot = await collection.Aggregate(Avg("EnglishScore")).GetSnapshotAsync();
+            var snapshot = await collection.Aggregate(Average("EnglishScore")).GetSnapshotAsync();
             Assert.Equal(Students.Data.Average(c => c.EnglishScore), snapshot["Avg_EnglishScore"].DoubleValue);
         }
 
@@ -560,7 +560,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task AvgWithLimit()
         {
             CollectionReference collection = _fixture.HighScoreCollection;
-            var snapshot = await collection.Limit(2).Aggregate(Avg("Level")).GetSnapshotAsync();
+            var snapshot = await collection.Limit(2).Aggregate(Average("Level")).GetSnapshotAsync();
             Assert.Equal(HighScore.Data.OrderBy(c => c.Level).Take(2).Average(c => c.Level), snapshot["Avg_Level"].DoubleValue);
         }
 
@@ -576,7 +576,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task AvgWithFilter()
         {
             CollectionReference collection = _fixture.HighScoreCollection;
-            var snapshot = await collection.WhereGreaterThan("Level", 20).Aggregate(Avg("Level")).GetSnapshotAsync();
+            var snapshot = await collection.WhereGreaterThan("Level", 20).Aggregate(Average("Level")).GetSnapshotAsync();
             Assert.Equal(HighScore.Data.Where(x => x.Level > 20).Average(c => c.Level), snapshot["Avg_Level"].DoubleValue);
         }
 
@@ -584,7 +584,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public async Task MultipleAggregations()
         {
             CollectionReference collection = _fixture.StudentsCollection;
-            var snapshot = await collection.Aggregate(Sum("MathScore"), Avg("MathScore"), Count()).GetSnapshotAsync();
+            var snapshot = await collection.Aggregate(Sum("MathScore"), Average("MathScore"), Count()).GetSnapshotAsync();
             Assert.Equal(Students.Data.Average(c => c.MathScore), snapshot["Avg_MathScore"].DoubleValue);
             Assert.Equal(Students.Data.Length, snapshot["Count"].IntegerValue);
             Assert.Equal(Students.Data.Length, snapshot.Count.Value);
@@ -594,7 +594,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
         public Task ExcessNumberOfAggregations()
         {
             var collection = _fixture.StudentsCollection;
-            _ = Assert.ThrowsAsync<Exception>(async () => await collection.Aggregate(Sum("Name"), Sum("MathScore"), Sum("Level"), Avg("EnglishScore"), Avg("Level", "myAvg"), Count()).GetSnapshotAsync());
+            _ = Assert.ThrowsAsync<Exception>(async () => await collection.Aggregate(Sum("Name"), Sum("MathScore"), Sum("Level"), Average("EnglishScore"), Average("Level", "myAvg"), Count()).GetSnapshotAsync());
             return Task.CompletedTask;
         }
 

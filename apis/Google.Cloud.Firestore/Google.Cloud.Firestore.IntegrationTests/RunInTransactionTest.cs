@@ -163,7 +163,7 @@ namespace Google.Cloud.Firestore.IntegrationTests
             var collection = _fixture.HighScoreCollection;
             await _fixture.FirestoreDb.RunTransactionAsync(async txn =>
             {
-                var aggQuery = collection.Aggregate(Aggregates.Avg("Score"));
+                var aggQuery = collection.Aggregate(Aggregates.Average("Score"));
                 var snapshot = await txn.GetSnapshotAsync(aggQuery);
                 Assert.Equal(HighScore.Data.Average(c => c.Score), snapshot["Avg_Score"].DoubleValue);
             });
