@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
 
 namespace Google.Cloud.Firestore
@@ -422,7 +423,34 @@ namespace Google.Cloud.Firestore
         /// </summary>
         /// <returns>An instance of <see cref="AggregateQuery"/> with count(*) aggregation applied.</returns>
         public AggregateQuery Count() =>
-            new AggregateQuery(this).WithAggregation(Aggregates.CreateCountAggregate());
+            new AggregateQuery(this).WithAggregation(Aggregates.Count());
+
+        /// <summary>
+        /// Calculates the specified aggregations over the documents in the result set of the given query,
+        /// without actually downloading the documents.
+        /// User can also include multiple aggregate functions in a single query.
+        /// Example: Aggregate(Sum("Score"), Average("Level"), Count())
+        ///
+        /// Using this function to perform aggregations is efficient because only the final aggregation
+        /// values, not the documents' data, is downloaded. This function can even perform aggregations of
+        /// the documents if the result set would be prohibitively large to download entirely(e.g.
+        /// thousands of documents).
+        /// 
+        /// </summary>
+        /// <param name="aggregation">Specify the <see cref="Aggregates"/> to be calculated. This is a mandotory parameter.</param>
+        /// <param name="aggregations">User can specify 0 to 4 more <see cref="Aggregates"/> to be calculated through this.
+        /// It allows multiple aggregations in a single query upto a max of 5 in total.</param>
+        /// <returns>Returns an <see cref="AggregateQuery" /> that performs aggregations on the documents in the result set of this query.</returns>
+        public AggregateQuery Aggregate(Aggregation aggregation, params Aggregation[] aggregations)
+        {
+            HashSet<Aggregation> result = new HashSet<Aggregation> { aggregation };
+
+            foreach (Aggregation agg in aggregations)
+            {
+                result.Add(agg);
+            }
+            return new AggregateQuery(this, result.ToList());
+        }
 
         /// <summary>
         /// Add the given filter to this query.

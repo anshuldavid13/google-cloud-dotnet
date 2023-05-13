@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using static Google.Cloud.Firestore.Aggregates;
 
 namespace Google.Cloud.Firestore.IntegrationTests
 {
@@ -465,6 +466,136 @@ namespace Google.Cloud.Firestore.IntegrationTests
             var snapshotWithLimit = await collection.Limit(2).Count().GetSnapshotAsync();
             Assert.Equal(HighScore.Data.Length, snapshotWithoutLimit.Count);
             Assert.Equal(2, snapshotWithLimit.Count);
+        }
+
+        [Fact]
+        public async Task SumTest()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Sum("Level")).GetSnapshotAsync();
+            Assert.Equal(Students.Data.Sum(c => c.Level), snapshot["Sum_Level"].IntegerValue);
+        }
+
+        [Fact]
+        public async Task SumWithDoubleReturnType()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Sum("MathScore")).GetSnapshotAsync();
+            Assert.Equal(Students.Data.Sum(c => c.MathScore), snapshot["Sum_MathScore"].DoubleValue);
+        }
+
+        [Fact]
+        public async Task SumWithAlias()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Sum("Level", "sumoflevels")).GetSnapshotAsync();
+            Assert.Equal(Students.Data.Sum(c => c.Level), snapshot["sumoflevels"].IntegerValue);
+        }
+
+        [Fact]
+        public async Task SumWithFieldPath()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Sum(new FieldPath("Level"))).GetSnapshotAsync();
+            Assert.Equal(Students.Data.Sum(c => c.Level), snapshot["Sum_Level"].IntegerValue);
+        }
+
+        [Fact]
+        public async Task AvgTest()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Average("Level")).GetSnapshotAsync();
+            Assert.Equal(Students.Data.Average(c => c.Level), snapshot["Avg_Level"].DoubleValue);
+        }
+
+        [Fact]
+        public async Task AvgAwithAlias()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Average("Level", "myAvg")).GetSnapshotAsync();
+            Assert.Equal(Students.Data.Average(c => c.Level), snapshot["myAvg"].DoubleValue);
+        }
+
+        [Fact]
+        public async Task AvgWithFieldPath()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Average(new FieldPath("Level"))).GetSnapshotAsync();
+            Assert.Equal(Students.Data.Average(c => c.Level), snapshot["Avg_Level"].DoubleValue);
+        }
+
+        [Fact]
+        public async Task AvgWithNaNValue()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Average("EnglishScore")).GetSnapshotAsync();
+            Assert.Equal(Students.Data.Average(c => c.EnglishScore), snapshot["Avg_EnglishScore"].DoubleValue);
+        }
+
+        [Fact]
+        public async Task EmptySum()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Sum("bar")).GetSnapshotAsync();
+            Assert.Equal(0, snapshot["Sum_bar"].IntegerValue);
+        }
+
+        [Fact]
+        public async Task NonNumericFieldSum()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Sum("Name")).GetSnapshotAsync();
+            Assert.Equal(0, snapshot["Sum_Name"].IntegerValue);
+        }
+
+        [Fact]
+        public async Task SumWithLimit()
+        {
+            CollectionReference collection = _fixture.HighScoreCollection;
+            var snapshot = await collection.Limit(2).Aggregate(Sum("Score")).GetSnapshotAsync();
+            Assert.Equal(HighScore.Data.OrderBy(c => c.Score).Take(2).Sum(c => c.Score), snapshot["Sum_Score"].IntegerValue);
+        }
+
+        [Fact]
+        public async Task AvgWithLimit()
+        {
+            CollectionReference collection = _fixture.HighScoreCollection;
+            var snapshot = await collection.Limit(2).Aggregate(Average("Level")).GetSnapshotAsync();
+            Assert.Equal(HighScore.Data.OrderBy(c => c.Level).Take(2).Average(c => c.Level), snapshot["Avg_Level"].DoubleValue);
+        }
+
+        [Fact]
+        public async Task SumWithFilter()
+        {
+            CollectionReference collection = _fixture.HighScoreCollection;
+            var snapshot = await collection.WhereGreaterThan("Score", 100).Aggregate(Sum("Score")).GetSnapshotAsync();
+            Assert.Equal(HighScore.Data.Where(x => x.Score > 100).Sum(c => c.Score), snapshot["Sum_Score"].IntegerValue);
+        }
+
+        [Fact]
+        public async Task AvgWithFilter()
+        {
+            CollectionReference collection = _fixture.HighScoreCollection;
+            var snapshot = await collection.WhereGreaterThan("Level", 20).Aggregate(Average("Level")).GetSnapshotAsync();
+            Assert.Equal(HighScore.Data.Where(x => x.Level > 20).Average(c => c.Level), snapshot["Avg_Level"].DoubleValue);
+        }
+
+        [Fact]
+        public async Task MultipleAggregations()
+        {
+            CollectionReference collection = _fixture.StudentsCollection;
+            var snapshot = await collection.Aggregate(Sum("MathScore"), Average("MathScore"), Count()).GetSnapshotAsync();
+            Assert.Equal(Students.Data.Average(c => c.MathScore), snapshot["Avg_MathScore"].DoubleValue);
+            Assert.Equal(Students.Data.Length, snapshot["Count"].IntegerValue);
+            Assert.Equal(Students.Data.Length, snapshot.Count.Value);
+        }
+
+        [Fact]
+        public Task ExcessNumberOfAggregations()
+        {
+            var collection = _fixture.StudentsCollection;
+            _ = Assert.ThrowsAsync<Exception>(async () => await collection.Aggregate(Sum("Name"), Sum("MathScore"), Sum("Level"), Average("EnglishScore"), Average("Level", "myAvg"), Count()).GetSnapshotAsync());
+            return Task.CompletedTask;
         }
 
         public static TheoryData<string, object, string[]> ArrayContainsTheoryData = new TheoryData<string, object, string[]>

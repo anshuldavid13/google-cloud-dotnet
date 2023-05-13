@@ -26,7 +26,7 @@ using static Google.Cloud.Firestore.V1.StructuredAggregationQuery.Types;
 namespace Google.Cloud.Firestore;
 
 /// <summary>
-/// A query for running an aggregation over a [StructuredQuery][google.firestore.v1.StructuredQuery]. Currently only "count(*)" aggregation is supported.
+/// A query for running an aggregation over a [StructuredQuery][google.firestore.v1.StructuredQuery].
 /// </summary>
 public sealed class AggregateQuery : IEquatable<AggregateQuery>
 {
@@ -39,7 +39,7 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
         _aggregations = new List<Aggregation>();
     }
 
-    private AggregateQuery(Query query, IReadOnlyList<Aggregation> aggregations)
+    internal AggregateQuery(Query query, IReadOnlyList<Aggregation> aggregations)
     {
         _query = GaxPreconditions.CheckNotNull(query, nameof(query));
         _aggregations = aggregations;
@@ -47,8 +47,7 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
 
     internal AggregateQuery WithAggregation(Aggregation aggregation)
     {
-        var newAggregations = new List<Aggregation>(_aggregations);
-        newAggregations.Add(aggregation);
+        var newAggregations = new List<Aggregation>(_aggregations) { aggregation };
         return new AggregateQuery(_query, newAggregations);
     }
 
@@ -65,16 +64,25 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
         IAsyncEnumerable<RunAggregationQueryResponse> responseStream = GetAggregationQueryResponseStreamAsync(transactionId, cancellationToken);
         Timestamp? readTime = null;
         long? count = null;
+        Dictionary<string, Value> data = new Dictionary<string, Value>();
         await responseStream.ForEachAsync(response => ProcessResponse(response), cancellationToken).ConfigureAwait(false);
         GaxPreconditions.CheckState(readTime != null, "The stream returned from RunAggregationQuery did not provide a read timestamp.");
-        return new AggregateQuerySnapshot(this, readTime.Value, count);
+        return new AggregateQuerySnapshot(this, readTime.Value, count, data);
 
         void ProcessResponse(RunAggregationQueryResponse response)
         {
-            if (count is null && response.Result.AggregateFields?.TryGetValue(Aggregates.CountAlias, out var countValue) == true)
+            var aggregateFields = response.Result.AggregateFields;
+            if (count is null && aggregateFields?.TryGetValue(Aggregates.CountAlias, out var countValue) == true)
             {
                 GaxPreconditions.CheckState(countValue.ValueTypeCase == Value.ValueTypeOneofCase.IntegerValue, "The count was not an integer.");
                 count = countValue.IntegerValue;
+            }
+            if (aggregateFields != null)
+            {
+                foreach (var mapField in aggregateFields)
+                {
+                    data.Add(mapField.Key, mapField.Value);
+                }
             }
             readTime ??= Timestamp.FromProtoOrNull(response.ReadTime);
         }
@@ -96,12 +104,11 @@ public sealed class AggregateQuery : IEquatable<AggregateQuery>
         return response.GetResponseStream();
     }
 
-    internal StructuredAggregationQuery ToStructuredAggregationQuery() =>
-        new StructuredAggregationQuery
-        {
-            StructuredQuery = _query.ToStructuredQuery(),
-            Aggregations = { _aggregations }
-        };
+    internal StructuredAggregationQuery ToStructuredAggregationQuery() => new()
+    {
+        StructuredQuery = _query.ToStructuredQuery(),
+        Aggregations = { _aggregations }
+    };
 
     /// <inheritdoc />
     public override int GetHashCode() =>
