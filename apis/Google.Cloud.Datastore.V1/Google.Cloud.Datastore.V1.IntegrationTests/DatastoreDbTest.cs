@@ -442,7 +442,7 @@ namespace Google.Cloud.Datastore.V1.IntegrationTests
             var query = new Query("CountTestStQuery");
             AggregationQuery aggQuery = new AggregationQuery(query)
             {
-                Aggregations = { Count("count")}
+                Aggregations = { Count("count") }
             };
             AggregationQueryResults results = db.RunAggregationQuery(aggQuery);
             long count = results["count"].IntegerValue;
@@ -486,7 +486,7 @@ namespace Google.Cloud.Datastore.V1.IntegrationTests
         }
 
         [Fact]
-        public void Sum_WithAias()
+        public void Sum_WithAlias()
         {
             var db = _fixture.DatastoreTestDb;
 
@@ -553,7 +553,7 @@ namespace Google.Cloud.Datastore.V1.IntegrationTests
         }
 
         [Fact]
-        public void Avg_WithAias()
+        public void Avg_WithAlias()
         {
             var db = _fixture.DatastoreTestDb;
 
