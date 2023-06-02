@@ -31,8 +31,6 @@ namespace Google.Cloud.Datastore.V1.IntegrationTests
         private const int RetryCount = 10;
         private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(3);
 
-        public DatastoreDb DatastoreTestDb { get; }
-
         public string NamespaceId { get; }
         public PartitionId PartitionId => new PartitionId { ProjectId = ProjectId, NamespaceId = NamespaceId };
 

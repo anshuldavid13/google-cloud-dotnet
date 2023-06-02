@@ -159,8 +159,10 @@ namespace Google.Cloud.Datastore.V1.IntegrationTests
             var keyFactory = db.CreateKeyFactory("AggTestTransaction");
             var entities = new[]
             {
-                new Entity { Key = keyFactory.CreateKey("x"), ["description"] = "description for x" },
-                new Entity { Key = keyFactory.CreateKey("y"), ["description"] = "description for y" }
+                new Entity { Key = keyFactory.CreateKey("11"), ["age"] = 12, ["height"] = 5  },
+                new Entity { Key = keyFactory.CreateKey("21"), ["age"] = 12, ["height"] = 4.6  },
+                new Entity { Key = keyFactory.CreateKey("31"), ["age"] = 14, ["height"] = 4  },
+                new Entity { Key = keyFactory.CreateKey("41"), ["age"] = 11, ["height"] = 5.2  }
             };
             db.Insert(entities);
             using var transaction = db.BeginTransaction();
@@ -172,11 +174,11 @@ namespace Google.Cloud.Datastore.V1.IntegrationTests
             };
             AggregationQueryResults resultsForStructuredQuery = transaction.RunAggregationQuery(aggQuery);
             AggregationQueryResults resultsForGqlQuery = transaction.RunAggregationQuery(gqlQuery);
-            Assert.Equal(2, resultsForStructuredQuery["count"].IntegerValue);
+            Assert.Equal(4, resultsForStructuredQuery["count"].IntegerValue);
             Assert.Equal(49, resultsForStructuredQuery["sumage"].IntegerValue);
             Assert.Equal(12.25, resultsForStructuredQuery["avgage"].DoubleValue);
 
-            Assert.Equal(2, resultsForGqlQuery["count"].IntegerValue);
+            Assert.Equal(4, resultsForGqlQuery["count"].IntegerValue);
         }
     }
 }
