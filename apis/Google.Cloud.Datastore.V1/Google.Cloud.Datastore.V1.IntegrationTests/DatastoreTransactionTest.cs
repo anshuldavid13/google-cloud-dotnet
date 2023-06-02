@@ -153,10 +153,10 @@ namespace Google.Cloud.Datastore.V1.IntegrationTests
         }
 
         [Fact]
-        public void Transaction_WithCount()
+        public void Transaction_WithAggregation()
         {
             var db = _fixture.CreateDatastoreDb();
-            var keyFactory = db.CreateKeyFactory("CountTestTransaction");
+            var keyFactory = db.CreateKeyFactory("AggTestTransaction");
             var entities = new[]
             {
                 new Entity { Key = keyFactory.CreateKey("x"), ["description"] = "description for x" },
@@ -164,54 +164,19 @@ namespace Google.Cloud.Datastore.V1.IntegrationTests
             };
             db.Insert(entities);
             using var transaction = db.BeginTransaction();
-            var gqlQuery = new GqlQuery { QueryString = "SELECT count(*)  as `count` FROM CountTestTransaction " };
-            var query = new Query("CountTestTransaction");
+            var gqlQuery = new GqlQuery { QueryString = "SELECT count(*)  as `count` FROM AggTestTransaction " };
+            var query = new Query("AggTestTransaction");
             AggregationQuery aggQuery = new AggregationQuery(query)
             {
-                Aggregations = { Aggregations.Count("count") }
+                Aggregations = { Count("count"), Sum("age", "sumage"), Average("age", "avgage") }
             };
             AggregationQueryResults resultsForStructuredQuery = transaction.RunAggregationQuery(aggQuery);
             AggregationQueryResults resultsForGqlQuery = transaction.RunAggregationQuery(gqlQuery);
             Assert.Equal(2, resultsForStructuredQuery["count"].IntegerValue);
-            Assert.Equal(2, resultsForGqlQuery["count"].IntegerValue);
-        }
-
-        [Fact]
-        public void Transaction_WithSum()
-        {
-            var db = _fixture.DatastoreTestDb;
-
-            using var transaction = db.BeginTransaction();
-            var gqlQuery = new GqlQuery { QueryString = "SELECT sum(age) as `sumage` FROM Students" };
-
-            var query = new Query("Students");
-            AggregationQuery aggQuery = new AggregationQuery(query)
-            {
-                Aggregations = { Sum("age", "sumage") }
-            };
-            AggregationQueryResults resultsForStructuredQuery = transaction.RunAggregationQuery(aggQuery);
-            AggregationQueryResults resultsForGqlQuery = transaction.RunAggregationQuery(gqlQuery);
             Assert.Equal(49, resultsForStructuredQuery["sumage"].IntegerValue);
-            Assert.Equal(49, resultsForGqlQuery["sumage"].IntegerValue);
-        }
-
-        [Fact]
-        public void Transaction_WithAvg()
-        {
-            var db = _fixture.DatastoreTestDb;
-
-            using var transaction = db.BeginTransaction();
-            var gqlQuery = new GqlQuery { QueryString = "SELECT avg(age) as `avgage` FROM Students" };
-
-            var query = new Query("Students");
-            AggregationQuery aggQuery = new AggregationQuery(query)
-            {
-                Aggregations = { Average("age", "avgage") }
-            };
-            AggregationQueryResults resultsForStructuredQuery = transaction.RunAggregationQuery(aggQuery);
-            AggregationQueryResults resultsForGqlQuery = transaction.RunAggregationQuery(gqlQuery);
             Assert.Equal(12.25, resultsForStructuredQuery["avgage"].DoubleValue);
-            Assert.Equal(12.25, resultsForGqlQuery["avgage"].DoubleValue);
+
+            Assert.Equal(2, resultsForGqlQuery["count"].IntegerValue);
         }
     }
 }
