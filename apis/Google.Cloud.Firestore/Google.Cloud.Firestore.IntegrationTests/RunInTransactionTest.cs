@@ -1,4 +1,4 @@
-﻿// Copyright 2017, Google Inc. All rights reserved.
+// Copyright 2017, Google Inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 using Google.Cloud.Firestore.IntegrationTests.Models;
 using Grpc.Core;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -141,6 +142,30 @@ namespace Google.Cloud.Firestore.IntegrationTests
                 var aggQuery = collection.Count();
                 var snapshot = await txn.GetSnapshotAsync(aggQuery);
                 Assert.Equal(HighScore.Data.Length, snapshot.Count);
+            });
+        }
+
+        [Fact]
+        public async Task TransactionWithSumAggregation()
+        {
+            var collection = _fixture.HighScoreCollection;
+            await _fixture.FirestoreDb.RunTransactionAsync(async txn =>
+            {
+                var aggQuery = collection.Aggregate(Aggregates.Sum("Score"));
+                var snapshot = await txn.GetSnapshotAsync(aggQuery);
+                Assert.Equal(HighScore.Data.Sum(c => c.Score), snapshot["Sum_Score"].IntegerValue);
+            });
+        }
+
+        [Fact]
+        public async Task TransactionWithAvgAggregation()
+        {
+            var collection = _fixture.HighScoreCollection;
+            await _fixture.FirestoreDb.RunTransactionAsync(async txn =>
+            {
+                var aggQuery = collection.Aggregate(Aggregates.Average("Score"));
+                var snapshot = await txn.GetSnapshotAsync(aggQuery);
+                Assert.Equal(HighScore.Data.Average(c => c.Score), snapshot["Avg_Score"].DoubleValue);
             });
         }
     }
